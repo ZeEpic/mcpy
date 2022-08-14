@@ -1,2 +1,7 @@
-package com.rimlang.rim.lexer;public class Token {
+package com.rimlang.rim.lexer;
+
+public class Token {
+
+
+
 }

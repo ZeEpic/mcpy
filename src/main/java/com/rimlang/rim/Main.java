@@ -1,4 +1,4 @@
-package com.rimlang;
+package com.rimlang.rim;
 
 public class Main {
     public static void main(String[] args) {
