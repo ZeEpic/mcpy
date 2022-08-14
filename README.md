@@ -100,13 +100,14 @@ command("test-command") {
 command("tp") by player {
     args = (target: player)
     trigger = {
-        player.location = target.location
+        send("You have been teleported to {target.name}.")
+        player.teleport(@target)
     }
 }
 
 // Define a timer
 timer(60) {
-    broadcase("1 minute has passed.")
+    broadcast("1 minute has passed.")
 }
 
 // Some other syntax
