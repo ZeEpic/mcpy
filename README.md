@@ -96,6 +96,14 @@ command("test-command") {
     }
 }
 
+// Define a command that can only be done by players, not console
+command("tp") by player {
+    args = (target: player)
+    trigger = {
+        player.location = target.location
+    }
+}
+
 // Define a timer
 timer(60) {
     broadcase("1 minute has passed.")
@@ -122,12 +130,15 @@ fn function(arg: type) -> return_type {
     // code
 }
 
+fn function(arg: type)
+    = pass // replace with code
+
 type.property = value
 print(type.property)
 type.method(arg)
 
 // Specify conditions of type
-// Used for events
+// Used for events and commands
 // Type will only only happen if other_type is involved
 type by other_type
 ```
