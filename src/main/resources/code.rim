@@ -8,7 +8,7 @@ on (blocks.break) {
 }
 
 // Define a player trait
-players {
+trait(player) {
     game_level = 0
 }
 

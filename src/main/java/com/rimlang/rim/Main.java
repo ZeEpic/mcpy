@@ -1,13 +1,16 @@
 package com.rimlang.rim;
 
 import com.rimlang.rim.lexer.Lexer;
+import com.rimlang.rim.lexer.Token;
 import com.rimlang.rim.lexer.TokenType;
+import com.rimlang.rim.syntax.SyntaxAnalyzer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
 import java.util.stream.Collectors;
 
 public class Main {
@@ -25,7 +28,9 @@ public class Main {
             return;
         }
 //        System.out.println(TokenType.findType("="));
-        System.out.println(Lexer.lex(code));
+        List<Token> tokens = Lexer.lex(code);
+        String javaCode = SyntaxAnalyzer.analyze(tokens);
+        System.out.println(javaCode);
     }
 
     private static @Nullable String loadResource(@NotNull String resource) {
