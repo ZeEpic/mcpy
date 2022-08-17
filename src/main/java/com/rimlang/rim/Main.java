@@ -1,5 +1,7 @@
 package com.rimlang.rim;
 
+import com.rimlang.rim.lexer.Lexer;
+import com.rimlang.rim.lexer.TokenType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +20,12 @@ public class Main {
 
     public static void main(String[] args) {
         code = loadResource("code.rim");
+        if (code == null) {
+            System.out.println("Could not load code.rim");
+            return;
+        }
+//        System.out.println(TokenType.findType("="));
+        System.out.println(Lexer.lex(code));
     }
 
     private static @Nullable String loadResource(@NotNull String resource) {

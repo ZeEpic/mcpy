@@ -1,0 +1,41 @@
+// Define an event
+on (blocks.break) {
+    // This code is run when any block is broken by a player
+    send("You broke a block of type {block.type}.")
+    if block.type == GRASS_BLOCK {
+        cancel()
+    }
+}
+
+// Define a player trait
+players {
+    game_level = 0
+}
+
+// Define a command
+command("level") {
+    args = (target: player, level: int = -1)
+    aliases = ["set-level"]
+    trigger = {
+        if (level < 0) {
+            send("{target.name} is level {target.game_level}.")
+        } else {
+            send("{target.name} is now level {level}.")
+            target.game_level = level
+        }
+    }
+}
+
+// Define a command that can only be done by players, not console
+command("tp") by player {
+    args = (target: player)
+    trigger = {
+        send("You have been teleported to {target.name}.")
+        player.teleport(@target)
+    }
+}
+
+// Define a timer
+timer(60) {
+    broadcast("1 minute has passed.")
+}

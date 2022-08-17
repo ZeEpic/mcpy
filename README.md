@@ -7,6 +7,7 @@
 - Variables and functions are written in snake_case.
 - Code should be easy to understand for beginners.
 - Features should be intended for use in Minecraft.
+- Inspired by Kotlin, Rust, Java, and Python.
 
 ### Data Types
 ```c++
@@ -32,7 +33,7 @@ loc = @(0, 65, 0)
 a = name & p
 
 // function
-fn function(p: player) -> string {
+fn function(p: player): string {
   return p.name
 }
 fn simple_function(p: player)
@@ -73,25 +74,27 @@ zombie.location = w@(10, 11, 10)
 // Define an event
 on (blocks.break) {
     // This code is run when any block is broken by a player
-    send("You broke a block of type {block.type}")
-    if block.type = GRASS_BLOCK {
+    send("You broke a block of type {block.type}.")
+    if block.type == GRASS_BLOCK {
         cancel()
     }
 }
 
+// Define a player trait
+players {
+    game_level = 0
+}
+
 // Define a command
-command("test-command") {
-    args = (target: player, level: int?)
-    aliases = ["test"]
+command("level") {
+    args = (target: player, level: int = -1)
+    aliases = ["set-level"]
     trigger = {
-        match (level) {
-            exists -> {
-                target.send("You are now level {level}.")
-                target.game_level = level
-            }
-            else -> {
-                send("{target.name} is level {target.game_level}.")
-            }
+        if (level < 0) {
+            send("{target.name} is level {target.game_level}.")
+        } else {
+            send("{target.name} is now level {level}.")
+            target.game_level = level
         }
     }
 }
@@ -112,13 +115,13 @@ timer(60) {
 
 // Some other syntax
 match (expression) {
-    case_1 -> {
+    case_1 {
         // code
     }
-    case_2 -> {
+    case_2 {
         // code
     }
-    else -> {
+    else {
         // code
     }
 }
@@ -127,7 +130,7 @@ if expression {
     // code
 }
 
-fn function(arg: type) -> return_type {
+fn function(arg: type): return_type {
     // code
 }
 
