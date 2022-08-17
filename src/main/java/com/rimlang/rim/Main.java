@@ -2,7 +2,6 @@ package com.rimlang.rim;
 
 import com.rimlang.rim.lexer.Lexer;
 import com.rimlang.rim.lexer.Token;
-import com.rimlang.rim.lexer.TokenType;
 import com.rimlang.rim.syntax.SyntaxAnalyzer;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -30,6 +29,8 @@ public class Main {
 //        System.out.println(TokenType.findType("="));
         List<Token> tokens = Lexer.lex(code);
         String javaCode = SyntaxAnalyzer.analyze(tokens);
+//        Compiler.compile(javaCode);
+//        JarMaker.create();
         System.out.println(javaCode);
     }
 

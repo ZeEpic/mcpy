@@ -7,32 +7,32 @@ import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 public enum TokenType {
-    ID(null), NUMBER_LITERAL(null), STRING_LITERAL(null), BOOLEAN_LITERAL(List.of("true", "false")),
-    EOL(List.of("\\n")),
-    BOOLEAN_OPERATOR(List.of( ">", "<", ">=", "<=", "!=", "==", "")),
-    MATH_OPERATOR(List.of("+", "-", "*", "/", "%")),
-    LOGICAL_OPERATOR(List.of("and", "or", "not")),
-    ASSIGNMENT_OPERATOR(List.of("=")),
-    PARENTHESIS(List.of("(", ")")), BRACKET(List.of("[", "]")), BRACE(List.of("{", "}")),
-    COMMA(List.of(",")), DOT(List.of(".")), COLON(List.of(":")),
-    AT(List.of("@")),
-    IF(List.of("if")), ELSE(List.of("else")), ELIF(List.of("elif")),
-    WHILE(List.of("while")), FOR(List.of("for")), MATCH(List.of("match")),
-    PRINT(List.of("print")),
-    RETURN(List.of("return")), FUNCTION(List.of("fn")), PASS(List.of("pass")),
-    IS(List.of("is")), BY(List.of("by")),
-    COMMAND(List.of("command")), TIMER(List.of("timer")), ON_EVENT(List.of("on")), TRAIT(List.of("trait")),
-    TYPE(List.of(
+    ID, NUMBER_LITERAL, STRING_LITERAL, BOOLEAN_LITERAL("true", "false"),
+    EOL("\\n"),
+    BOOLEAN_OPERATOR( ">", "<", ">=", "<=", "!=", "==", ""),
+    MATH_OPERATOR("+", "-", "*", "/", "%"),
+    LOGICAL_OPERATOR("and", "or", "not"),
+    ASSIGNMENT_OPERATOR("="),
+    PARENTHESIS("(", ")"), BRACKET("[", "]"), BRACE("{", "}"),
+    COMMA(","), DOT("."), COLON(":"),
+    AT("@"),
+    IF("if"), ELSE("else"), ELIF("elif"),
+    WHILE("while"), FOR("for"), MATCH("match"),
+    PRINT("print"),
+    RETURN("return"), FUNCTION("fn"), PASS("pass"),
+    IS("is"), BY("by"),
+    COMMAND("command"), TIMER("timer"), ON_EVENT("on"), TRAIT("trait"),
+    TYPE(
             "int", "string", "bool", "list", "function",
             "player", "location", "world", "entity",
             "event", "args",
             "block", "item", "material",
             "permission"
-    ));
+    );
     private final @Nullable List<String> values;
 
-    TokenType(@Nullable List<String> values) {
-        this.values = values;
+    TokenType(String... values) {
+        this.values = (values == null || values.length == 0) ? null : Arrays.asList(values);
     }
 
     public static @Nullable TokenType findType(String s) {
