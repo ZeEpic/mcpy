@@ -2,7 +2,7 @@ package com.rimlang.rim.lexer;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
+import java.util.Objects;
 
 public class Lexer {
 
@@ -20,12 +20,11 @@ public class Lexer {
                     if (tokenString.matches("-?\\d+(\\.\\d+)?")) {
                         tokens.add(new Token(TokenType.NUMBER_LITERAL, tokenString));
                     } else {
-                        TokenType type = TokenType.findType(tokenString);
-                        if (type == null) {
-                            tokens.add(new Token(TokenType.ID, tokenString));
-                        } else {
-                            tokens.add(new Token(type, tokenString));
-                        }
+                        TokenType type = TokenType.findType(tokenString); // Search for matching keywords
+                        tokens.add(new Token(
+                                Objects.requireNonNullElse(type, TokenType.ID),
+                                tokenString
+                        ));
                     }
                     token = new StringBuilder();
                 }

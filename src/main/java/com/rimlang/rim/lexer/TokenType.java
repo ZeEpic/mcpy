@@ -9,7 +9,7 @@ import java.util.concurrent.atomic.AtomicReference;
 public enum TokenType {
     ID, NUMBER_LITERAL, STRING_LITERAL, BOOLEAN_LITERAL("true", "false"),
     EOL("\\n"),
-    BOOLEAN_OPERATOR( ">", "<", ">=", "<=", "!=", "==", ""),
+    BOOLEAN_OPERATOR( ">", "<", ">=", "<=", "!=", "=="),
     MATH_OPERATOR("+", "-", "*", "/", "%"),
     LOGICAL_OPERATOR("and", "or", "not"),
     ASSIGNMENT_OPERATOR("="),

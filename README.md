@@ -29,15 +29,10 @@ p = player("ZeEpic")
 // location
 loc = @(0, 65, 0)
 
-// pair (maybe?)
-a = name & p
-
 // function
 fn function(p: player): string {
-  return p.name
+    return p.name
 }
-fn simple_function(p: player)
-  = p.name
 
 // bool
 b = false
