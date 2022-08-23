@@ -28,10 +28,10 @@ public class Main {
         }
 //        System.out.println(TokenType.findType("="));
         List<Token> tokens = Lexer.lex(code);
-        String javaCode = SyntaxAnalyzer.analyze(tokens);
+//        String javaCode = SyntaxAnalyzer.analyze(tokens);
 //        Compiler.compile(javaCode);
 //        JarMaker.create();
-        System.out.println(javaCode);
+        System.out.println(tokens);
     }
 
     private static @Nullable String loadResource(@NotNull String resource) {

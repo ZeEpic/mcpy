@@ -10,55 +10,55 @@
 - Inspired by Kotlin, Rust, Java, and Python.
 
 ### Data Types
-```c++
-// int
+```python
+# int
 x = 5
 
-// string
+# string
 name = "ZeEpic"
 
-// list
+# list
 bombs = []
 
-// args
+# args
 args = (max: int, power: int)
 
-// player
+# player
 p = player("ZeEpic")
 
-// location
+# location
 loc = @(0, 65, 0)
 
-// function
+# function
 fn function(p: player): string {
     return p.name
 }
 
-// bool
+# bool
 b = false
 c = true
 
-// material
+# material
 mat = STONE
 
-// permission
+# permission
 admin = permission("group.admin")
 cool_people = permission("people.cool")
 
-// world
+# world
 w = world("world")
 
-// block
-block = w@(10, 10, 10)
-block.type = GRASS_BLOCK
+# block
+b = w@(10, 10, 10)
+b.type = GRASS_BLOCK
 
-// event
+# event
 block_break_event = blocks.break
 block_place_event = blocks.place
 player_death_by_player_event = players.death by player
 entity_right_clicked_by_entity = entities.interact by entity
 
-// entity
+# entity
 zombie = entity.ZOMBIE
 zombie.location = w@(10, 11, 10)
 ```
@@ -66,78 +66,78 @@ zombie.location = w@(10, 11, 10)
 ### Examples
 
 ```c++
-// Define an event
+# Define an event
 on (blocks.break) {
-    // This code is run when any block is broken by a player
+    # This code is run when any block is broken by a player
     send("You broke a block of type {block.type}.")
     if block.type == GRASS_BLOCK {
         cancel()
     }
 }
 
-// Define a player trait
-players {
+# Define a player trait
+trait(player) {
     game_level = 0
 }
 
-// Define a command
+# Define a command
 command("level") {
     args = (target: player, level: int = -1)
     aliases = ["set-level"]
     trigger = {
         if (level < 0) {
-            send("{target.name} is level {target.game_level}.")
+            sender.send("{target.name} is level {target.game_level}.")
         } else {
-            send("{target.name} is now level {level}.")
+            sender.send("{target.name} is now level {level}.")
             target.game_level = level
         }
     }
 }
 
-// Define a command that can only be done by players, not console
+# Define a command that can only be done by players, not console
 command("tp") by player {
     args = (target: player)
     trigger = {
-        send("You have been teleported to {target.name}.")
-        player.teleport(@target)
+        sender.send("You have been teleported to {target.name}.")
+        sender.teleport(@target)
     }
 }
 
-// Define a timer
+# Define a timer
 timer(60) {
     broadcast("1 minute has passed.")
 }
 
-// Some other syntax
+# Some other syntax
 match (expression) {
     case_1 {
-        // code
+        # code
     }
     case_2 {
-        // code
+        # code
     }
     else {
-        // code
+        # code
     }
 }
 
 if expression {
-    // code
+    # code
 }
 
 fn function(arg: type): return_type {
-    // code
+    # code
 }
 
 fn function(arg: type)
-    = pass // replace with code
+    = pass # replace with code
 
 type.property = value
 print(type.property)
 type.method(arg)
 
-// Specify conditions of type
-// Used for events and commands
-// Type will only only happen if other_type is involved
+# Specify conditions of type
+# Used for events and commands
+# Type will only only happen if other_type is involved
 type by other_type
 ```
