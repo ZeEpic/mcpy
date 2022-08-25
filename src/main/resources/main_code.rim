@@ -17,6 +17,7 @@ trait(player) {
 
 # Define a command
 cmd level(target: player, level: int = -1) {
+    aliases = ["set-level"]
     if level < 0 {
         sender.send("{target.name} is level {target.game_level}.")
     } else {

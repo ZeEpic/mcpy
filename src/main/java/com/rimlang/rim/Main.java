@@ -1,8 +1,12 @@
 package com.rimlang.rim;
 
+import com.google.googlejavaformat.java.FormatterException;
 import com.rimlang.rim.lexer.Lexer;
 import com.rimlang.rim.lexer.Token;
+import com.rimlang.rim.syntax.RimSyntaxException;
 import com.rimlang.rim.syntax.SyntaxAnalyzer;
+import com.rimlang.rim.syntax.SyntaxNode;
+import com.rimlang.rim.translation.Translator;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -20,21 +24,25 @@ public class Main {
         return code;
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws RimSyntaxException, FormatterException {
         code = loadResource("code.rim");
         if (code == null) {
             System.out.println("Could not load code.rim");
             return;
         }
-//        System.out.println(TokenType.findType("="));
         List<Token> tokens = Lexer.lex(code);
-//        String javaCode = SyntaxAnalyzer.analyze(tokens);
+//        for (int i = 0; i < tokens.size(); i++) {
+//            if (i > 50) continue;
+//            System.out.println(i + ": " + tokens.get(i));
+//        }
+        List<SyntaxNode> nodes = SyntaxAnalyzer.analyze(tokens);
 //        Compiler.compile(javaCode);
 //        JarMaker.create();
-        System.out.println(tokens);
+        Translator.translate(nodes);
+        System.out.println(Translator.complete("ExamplePlugin"));
     }
 
-    private static @Nullable String loadResource(@NotNull String resource) {
+    public static @Nullable String loadResource(@NotNull String resource) {
         InputStream stream = Main.class.getResourceAsStream("/" + resource);
         if (stream == null) return null;
         return new BufferedReader(new InputStreamReader(stream))

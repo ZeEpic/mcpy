@@ -10,7 +10,7 @@
 - Inspired by Kotlin, Rust, Java, and Python.
 
 ### Data Types
-```python
+```c++
 # int
 x = 5
 
@@ -109,7 +109,7 @@ timer(60) {
 }
 
 # Some other syntax
-match (expression) {
+match expression {
     case_1 {
         # code
     }

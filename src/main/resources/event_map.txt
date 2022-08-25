@@ -1,0 +1,249 @@
+EntityDismountEvent: entities.dismount
+EntityMountEvent: entities.mount
+PlayerSpawnLocationEvent: players.spawn
+BlockBreakEvent: blocks.break
+BlockBurnEvent: blocks.burn
+BlockCanBuildEvent: blocks.can.build
+BlockCookEvent: blocks.cooking_finished
+BlockDamageAbortEvent: blocks.break.stop
+BlockDamageEvent: blocks.damage
+BlockDispenseArmorEvent: blocks.dispense.armor
+BlockDispenseEvent: blocks.dispense
+BlockDropItemEvent: blocks.drop.item
+BlockEvent: blocks
+BlockExpEvent: blocks.exp
+BlockExplodeEvent: blocks.explode
+BlockFadeEvent: blocks.melt
+BlockFertilizeEvent: blocks.bonemealed
+BlockFormEvent: blocks.form
+BlockFromToEvent: blocks.liquid.move
+BlockGrowEvent: blocks.grow
+BlockIgniteEvent: blocks.ignite
+BlockMultiPlaceEvent: blocks.place.double
+BlockPhysicsEvent: blocks.physics
+BlockPistonEvent: blocks.piston
+BlockPistonExtendEvent: blocks.piston.extend
+BlockPistonRetractEvent: blocks.piston.retract
+BlockPlaceEvent: blocks.place
+BlockReceiveGameEvent: blocks.skulk.activate
+BlockRedstoneEvent: blocks.redstone.change
+BlockShearEntityEvent: blocks.dispense.shear
+BlockSpreadEvent: blocks.spread
+CauldronLevelChangeEvent: blocks.cauldron.level
+EntityBlockFormEvent: entities.blocks.form
+FluidLevelChangeEvent: blocks.liquid.level
+LeavesDecayEvent: blocks.leaves.decay
+MoistureChangeEvent: blocks.soil.moisture
+NotePlayEvent: blocks.note_block.play
+SignChangeEvent: blocks.sign
+SpongeAbsorbEvent: blocks.sponge
+EnchantItemEvent: items.enchant.success
+PrepareItemEnchantEvent: items.enchant.insert
+AreaEffectCloudApplyEvent:
+ArrowBodyCountChangeEvent
+BatToggleSleepEvent
+CreatureSpawnEvent
+CreeperPowerEvent
+EnderDragonChangePhaseEvent
+EntityAirChangeEvent
+EntityBreakDoorEvent
+EntityBreedEvent
+EntityChangeBlockEvent
+EntityCombustByBlockEvent
+EntityCombustByEntityEvent
+EntityCombustEvent
+EntityDamageByBlockEvent
+EntityDamageByEntityEvent
+EntityDamageEvent
+EntityDeathEvent
+EntityDropItemEvent
+EntityEnterBlockEvent
+EntityEnterLoveModeEvent
+EntityEvent
+EntityExhaustionEvent
+EntityExplodeEvent
+EntityInteractEvent
+EntityPickupItemEvent
+EntityPlaceEvent
+EntityPortalEnterEvent
+EntityPortalEvent
+EntityPortalExitEvent
+EntityPoseChangeEvent
+EntityPotionEffectEvent
+EntityRegainHealthEvent
+EntityResurrectEvent
+EntityShootBowEvent
+EntitySpawnEvent
+EntitySpellCastEvent
+EntityTameEvent
+EntityTargetEvent
+EntityTargetLivingEntityEvent
+EntityTeleportEvent
+EntityToggleGlideEvent
+EntityToggleSwimEvent
+EntityTransformEvent
+EntityUnleashEvent
+ExpBottleEvent
+ExplosionPrimeEvent
+FireworkExplodeEvent
+FoodLevelChangeEvent
+HorseJumpEvent
+ItemDespawnEvent
+ItemMergeEvent
+ItemSpawnEvent
+LingeringPotionSplashEvent
+PiglinBarterEvent
+PigZapEvent
+PigZombieAngerEvent
+PlayerDeathEvent
+PlayerLeashEntityEvent
+PotionSplashEvent
+ProjectileHitEvent
+ProjectileLaunchEvent
+SheepDyeWoolEvent
+SheepRegrowWoolEvent
+SlimeSplitEvent
+SpawnerSpawnEvent
+StriderTemperatureChangeEvent
+VillagerAcquireTradeEvent
+VillagerCareerChangeEvent
+VillagerReplenishTradeEvent
+HangingBreakByEntityEvent
+HangingBreakEvent
+HangingEvent
+HangingPlaceEvent
+BrewEvent
+BrewingStandFuelEvent
+ClickType
+CraftItemEvent
+DragType
+FurnaceBurnEvent
+FurnaceExtractEvent
+FurnaceSmeltEvent
+FurnaceStartSmeltEvent
+InventoryAction
+InventoryClickEvent
+InventoryCloseEvent
+InventoryCreativeEvent
+InventoryDragEvent
+InventoryEvent
+InventoryInteractEvent
+InventoryMoveItemEvent
+InventoryOpenEvent
+InventoryPickupItemEvent
+InventoryType
+PrepareAnvilEvent
+PrepareItemCraftEvent
+PrepareSmithingEvent
+SmithItemEvent
+TradeSelectEvent
+AsyncPlayerChatEvent
+AsyncPlayerPreLoginEvent
+PlayerAdvancementDoneEvent
+PlayerAnimationEvent
+PlayerAnimationType
+PlayerArmorStandManipulateEvent
+PlayerBedEnterEvent
+PlayerBedLeaveEvent
+PlayerBucketEmptyEvent
+PlayerBucketEntityEvent
+PlayerBucketEvent
+PlayerBucketFillEvent
+PlayerChangedMainHandEvent
+PlayerChangedWorldEvent
+PlayerChannelEvent
+PlayerCommandPreprocessEvent
+PlayerCommandSendEvent
+PlayerDropItemEvent
+PlayerEditBookEvent
+PlayerEggThrowEvent
+PlayerEvent
+PlayerExpChangeEvent
+PlayerFishEvent
+PlayerGameModeChangeEvent
+PlayerHarvestBlockEvent
+PlayerInteractAtEntityEvent
+PlayerInteractEntityEvent
+PlayerInteractEvent
+PlayerItemBreakEvent
+PlayerItemConsumeEvent
+PlayerItemDamageEvent
+PlayerItemHeldEvent
+PlayerItemMendEvent
+PlayerJoinEvent
+PlayerKickEvent
+PlayerLevelChangeEvent
+PlayerLocaleChangeEvent
+PlayerLoginEvent
+PlayerMoveEvent
+PlayerPickupArrowEvent
+EntityPickupItemEvent
+PlayerPortalEvent
+PlayerQuitEvent
+PlayerRecipeDiscoverEvent
+PlayerRegisterChannelEvent
+PlayerResourcePackStatusEvent
+PlayerRespawnEvent
+PlayerRiptideEvent
+PlayerShearEntityEvent
+PlayerStatisticIncrementEvent
+PlayerSwapHandItemsEvent
+PlayerTakeLecternBookEvent
+PlayerTeleportEvent
+PlayerToggleFlightEvent
+PlayerToggleSneakEvent
+PlayerToggleSprintEvent
+PlayerUnleashEntityEvent
+PlayerUnregisterChannelEvent
+PlayerVelocityEvent
+RaidEvent
+RaidFinishEvent
+RaidSpawnWaveEvent
+RaidStopEvent
+RaidTriggerEvent
+BroadcastMessageEvent
+MapInitializeEvent
+PluginDisableEvent
+PluginEnableEvent
+PluginEvent
+RemoteServerCommandEvent
+ServerCommandEvent
+ServerEvent
+ServerListPingEvent
+ServerLoadEvent
+ServiceEvent
+ServiceRegisterEvent
+ServiceUnregisterEvent
+TabCompleteEvent
+VehicleBlockCollisionEvent
+VehicleCollisionEvent
+VehicleCreateEvent
+VehicleDamageEvent
+VehicleDestroyEvent
+VehicleEnterEvent
+VehicleEntityCollisionEvent
+VehicleEvent
+VehicleExitEvent
+VehicleMoveEvent
+VehicleUpdateEvent
+LightningStrikeEvent
+ThunderChangeEvent
+WeatherChangeEvent
+WeatherEvent
+ChunkLoadEvent
+ChunkPopulateEvent
+ChunkUnloadEvent
+EntitiesLoadEvent
+EntitiesUnloadEvent
+GenericGameEvent
+LootGenerateEvent
+PortalCreateEvent
+SpawnChangeEvent
+StructureGrowEvent
+TimeSkipEvent
+WorldEvent
+WorldInitEvent
+WorldLoadEvent
+WorldSaveEvent
+WorldUnloadEvent
+ChunkEvent
