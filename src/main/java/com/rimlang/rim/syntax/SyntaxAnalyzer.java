@@ -89,6 +89,7 @@ public class SyntaxAnalyzer {
                     throw new RimSyntaxException("If statement must have code body", line);
                 }
                 // TODO: Add else and elif
+
                 return new IfSyntaxNode(
                         new BooleanExpression(TokenUtil.sub(codeLine, 1, codeLine.size() - 1)),
                         analyze(TokenUtil.getGroup(body))
@@ -105,21 +106,28 @@ public class SyntaxAnalyzer {
                 );
             }
             case MATCH -> {
-                // TODO: Fix match statement, it's using the old system
-                int bodyStart = TokenUtil.nextBrace(code, beginningOfLine);
-                int bodyEnd = TokenUtil.nextBrace(code, bodyStart + 1);
-                int branchStart = TokenUtil.after(code, bodyEnd);
-                HashMap<Token, List<SyntaxNode>> branches = new HashMap<>();
-                while ((code.get(branchStart).getType() == TokenType.ID
-                        || code.get(branchStart).getType() == TokenType.ELSE)
-                        && branchStart < bodyEnd)
-                {
-                    int branchEnd = TokenUtil.nextBrace(code, branchStart + 1, bodyEnd);
-                    branches.put(code.get(branchStart), analyze(TokenUtil.sub(code, bodyStart, branchEnd)));
-                    bodyStart = TokenUtil.after(code, branchEnd);
+                Token bodyToken = codeLine.get(codeLine.size() - 1);
+                if (bodyToken.getType() != TokenType.BRACE) {
+                    throw new RimSyntaxException("Match statement must have code body", line);
                 }
+                List<Token> body = TokenUtil.getGroup(bodyToken);
+                HashMap<List<Token>, List<SyntaxNode>> branches = new HashMap<>();
+                TokenUtil.split(body, TokenType.EOL).forEach(tokens -> {
+                    Token branchBodyToken = tokens.get(tokens.size() - 1);
+                    try {
+                        if (branchBodyToken.getType() != TokenType.BRACE) {
+                            throw new RimSyntaxException("Match branch must have code body", branchBodyToken.getLine());
+                        }
+                        branches.put(
+                                TokenUtil.sub(tokens, 0, tokens.size() - 1),
+                                analyze(TokenUtil.getGroup(branchBodyToken))
+                        );
+                    } catch (RimSyntaxException e) {
+                        throw new RuntimeException(e);
+                    }
+                });
                 return new MatchSyntaxNode(
-                        new GenericExpression(TokenUtil.sub(code, beginningOfLine + 1, bodyStart)),
+                        new GenericExpression(TokenUtil.sub(codeLine, 1, codeLine.size() - 1)),
                         branches
                 );
             }

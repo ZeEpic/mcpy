@@ -39,211 +39,204 @@ SignChangeEvent: blocks.sign
 SpongeAbsorbEvent: blocks.sponge
 EnchantItemEvent: items.enchant.success
 PrepareItemEnchantEvent: items.enchant.insert
-AreaEffectCloudApplyEvent:
-ArrowBodyCountChangeEvent
-BatToggleSleepEvent
-CreatureSpawnEvent
-CreeperPowerEvent
-EnderDragonChangePhaseEvent
-EntityAirChangeEvent
-EntityBreakDoorEvent
-EntityBreedEvent
-EntityChangeBlockEvent
-EntityCombustByBlockEvent
-EntityCombustByEntityEvent
-EntityCombustEvent
-EntityDamageByBlockEvent
-EntityDamageByEntityEvent
-EntityDamageEvent
-EntityDeathEvent
-EntityDropItemEvent
-EntityEnterBlockEvent
-EntityEnterLoveModeEvent
-EntityEvent
-EntityExhaustionEvent
-EntityExplodeEvent
-EntityInteractEvent
-EntityPickupItemEvent
-EntityPlaceEvent
-EntityPortalEnterEvent
-EntityPortalEvent
-EntityPortalExitEvent
-EntityPoseChangeEvent
-EntityPotionEffectEvent
-EntityRegainHealthEvent
-EntityResurrectEvent
-EntityShootBowEvent
-EntitySpawnEvent
-EntitySpellCastEvent
-EntityTameEvent
-EntityTargetEvent
-EntityTargetLivingEntityEvent
-EntityTeleportEvent
-EntityToggleGlideEvent
-EntityToggleSwimEvent
-EntityTransformEvent
-EntityUnleashEvent
-ExpBottleEvent
-ExplosionPrimeEvent
-FireworkExplodeEvent
-FoodLevelChangeEvent
-HorseJumpEvent
-ItemDespawnEvent
-ItemMergeEvent
-ItemSpawnEvent
-LingeringPotionSplashEvent
-PiglinBarterEvent
-PigZapEvent
-PigZombieAngerEvent
-PlayerDeathEvent
-PlayerLeashEntityEvent
-PotionSplashEvent
-ProjectileHitEvent
-ProjectileLaunchEvent
-SheepDyeWoolEvent
-SheepRegrowWoolEvent
-SlimeSplitEvent
-SpawnerSpawnEvent
-StriderTemperatureChangeEvent
-VillagerAcquireTradeEvent
-VillagerCareerChangeEvent
-VillagerReplenishTradeEvent
-HangingBreakByEntityEvent
-HangingBreakEvent
-HangingEvent
-HangingPlaceEvent
-BrewEvent
-BrewingStandFuelEvent
-ClickType
-CraftItemEvent
-DragType
-FurnaceBurnEvent
-FurnaceExtractEvent
-FurnaceSmeltEvent
-FurnaceStartSmeltEvent
-InventoryAction
-InventoryClickEvent
-InventoryCloseEvent
-InventoryCreativeEvent
-InventoryDragEvent
-InventoryEvent
-InventoryInteractEvent
-InventoryMoveItemEvent
-InventoryOpenEvent
-InventoryPickupItemEvent
-InventoryType
-PrepareAnvilEvent
-PrepareItemCraftEvent
-PrepareSmithingEvent
-SmithItemEvent
-TradeSelectEvent
-AsyncPlayerChatEvent
-AsyncPlayerPreLoginEvent
-PlayerAdvancementDoneEvent
-PlayerAnimationEvent
-PlayerAnimationType
-PlayerArmorStandManipulateEvent
-PlayerBedEnterEvent
-PlayerBedLeaveEvent
-PlayerBucketEmptyEvent
-PlayerBucketEntityEvent
-PlayerBucketEvent
-PlayerBucketFillEvent
-PlayerChangedMainHandEvent
-PlayerChangedWorldEvent
-PlayerChannelEvent
-PlayerCommandPreprocessEvent
-PlayerCommandSendEvent
-PlayerDropItemEvent
-PlayerEditBookEvent
-PlayerEggThrowEvent
-PlayerEvent
-PlayerExpChangeEvent
-PlayerFishEvent
-PlayerGameModeChangeEvent
-PlayerHarvestBlockEvent
-PlayerInteractAtEntityEvent
-PlayerInteractEntityEvent
-PlayerInteractEvent
-PlayerItemBreakEvent
-PlayerItemConsumeEvent
-PlayerItemDamageEvent
-PlayerItemHeldEvent
-PlayerItemMendEvent
-PlayerJoinEvent
-PlayerKickEvent
-PlayerLevelChangeEvent
-PlayerLocaleChangeEvent
-PlayerLoginEvent
-PlayerMoveEvent
-PlayerPickupArrowEvent
-EntityPickupItemEvent
-PlayerPortalEvent
-PlayerQuitEvent
-PlayerRecipeDiscoverEvent
-PlayerRegisterChannelEvent
-PlayerResourcePackStatusEvent
-PlayerRespawnEvent
-PlayerRiptideEvent
-PlayerShearEntityEvent
-PlayerStatisticIncrementEvent
-PlayerSwapHandItemsEvent
-PlayerTakeLecternBookEvent
-PlayerTeleportEvent
-PlayerToggleFlightEvent
-PlayerToggleSneakEvent
-PlayerToggleSprintEvent
-PlayerUnleashEntityEvent
-PlayerUnregisterChannelEvent
-PlayerVelocityEvent
-RaidEvent
-RaidFinishEvent
-RaidSpawnWaveEvent
-RaidStopEvent
-RaidTriggerEvent
-BroadcastMessageEvent
-MapInitializeEvent
-PluginDisableEvent
-PluginEnableEvent
-PluginEvent
-RemoteServerCommandEvent
-ServerCommandEvent
-ServerEvent
-ServerListPingEvent
-ServerLoadEvent
-ServiceEvent
-ServiceRegisterEvent
-ServiceUnregisterEvent
-TabCompleteEvent
-VehicleBlockCollisionEvent
-VehicleCollisionEvent
-VehicleCreateEvent
-VehicleDamageEvent
-VehicleDestroyEvent
-VehicleEnterEvent
-VehicleEntityCollisionEvent
-VehicleEvent
-VehicleExitEvent
-VehicleMoveEvent
-VehicleUpdateEvent
-LightningStrikeEvent
-ThunderChangeEvent
-WeatherChangeEvent
-WeatherEvent
-ChunkLoadEvent
-ChunkPopulateEvent
-ChunkUnloadEvent
-EntitiesLoadEvent
-EntitiesUnloadEvent
-GenericGameEvent
-LootGenerateEvent
-PortalCreateEvent
-SpawnChangeEvent
-StructureGrowEvent
-TimeSkipEvent
-WorldEvent
-WorldInitEvent
-WorldLoadEvent
-WorldSaveEvent
-WorldUnloadEvent
-ChunkEvent
+AreaEffectCloudApplyEvent: entities.area_effect.apply
+ArrowBodyCountChangeEvent: entities.arrow.count
+BatToggleSleepEvent: entities.bat.sleep
+CreatureSpawnEvent: entities.spawn
+CreeperPowerEvent: entities.creeper.lightning
+EnderDragonChangePhaseEvent: entities.ender_dragon.attack_phase
+EntityAirChangeEvent: entities.air.change
+EntityBreakDoorEvent: entities.break.door
+EntityBreedEvent: entities.breed
+EntityChangeBlockEvent: entities.change.block
+EntityCombustByBlockEvent: entities.combust.block by block
+EntityCombustByEntityEvent: entities.combust.entity by entity
+EntityCombustEvent: entities.combust
+EntityDamageByBlockEvent: entities.damage by block
+EntityDamageByEntityEvent: entities.damage by entity
+EntityDamageEvent: entities.damage
+EntityDeathEvent: entities.death
+EntityDropItemEvent: entities.drop.item
+EntityEnterBlockEvent: entities.enter.block
+EntityEnterLoveModeEvent: entities.love_mode
+EntityEvent: entities
+EntityExhaustionEvent: entities.exhaustion
+EntityExplodeEvent: entities.explode
+EntityInteractEvent: entities.interact
+EntityPickupItemEvent: entities.pickup.item
+EntityPlaceEvent: entities.spawn.from_item by player
+EntityPortalEnterEvent: entities.portal.enter
+EntityPortalEvent: entities.portal
+EntityPortalExitEvent: entities.portal.exit
+EntityPoseChangeEvent: entities.pose
+EntityPotionEffectEvent: entities.potion
+EntityRegainHealthEvent: entities.regain.health
+EntityResurrectEvent: entities.resurrect
+EntityShootBowEvent: entities.shoot.bow
+EntitySpawnEvent: entities.spawn
+EntitySpellCastEvent: entities.spell.cast
+EntityTameEvent: entities.tame by player
+EntityTargetEvent: entities.target
+EntityTargetLivingEntityEvent: entities.target.living_entity
+EntityTeleportEvent: entities.teleport
+EntityToggleGlideEvent: entities.glide.toggle
+EntityToggleSwimEvent: entities.swim.toggle
+EntityTransformEvent: entities.transform
+EntityUnleashEvent: entities.leash.remove
+ExpBottleEvent: entities.spawn.exp_bottle
+ExplosionPrimeEvent: entities.explode.begin
+FireworkExplodeEvent: entities.explode.firework
+FoodLevelChangeEvent: entities.food.level
+HorseJumpEvent: entities.jump.horse
+ItemDespawnEvent: entities.despawn.item
+ItemMergeEvent: entities.merge.item
+ItemSpawnEvent: entities.spawn.from_item
+LingeringPotionSplashEvent: entities.lingering_potion.splash
+PiglinBarterEvent: entities.barter.piglin
+PigZapEvent: entities.zap.pig
+PigZombieAngerEvent: entities.pig_zombie.anger
+PlayerDeathEvent: players.death
+PlayerLeashEntityEvent: players.leash.entity
+PotionSplashEvent: entities.potion.splash
+ProjectileHitEvent: entities.projectile.hit
+ProjectileLaunchEvent: entities.projectile.launch
+SheepDyeWoolEvent: entities.sheep.dye
+SheepRegrowWoolEvent: entities.sheep.regrow
+SlimeSplitEvent: entities.slime.split
+SpawnerSpawnEvent: entities.spawn.spawner
+StriderTemperatureChangeEvent: entities.strider.temperature
+VillagerAcquireTradeEvent: entities.villager.trade
+VillagerCareerChangeEvent: entities.villager.career
+VillagerReplenishTradeEvent: entities.villager.replenish_trade
+HangingBreakByEntityEvent: entities.hanging.break by entity
+HangingBreakEvent: entities.hanging.break
+HangingEvent: entities.hanging
+HangingPlaceEvent: entities.spawn.hanging
+BrewEvent: blocks.brew.finish
+BrewingStandFuelEvent: blocks.brew.fuel
+CraftItemEvent: players.craft
+FurnaceBurnEvent: blocks.furnace.fuel.burnt
+FurnaceExtractEvent: blocks.furnace.extract
+FurnaceSmeltEvent: blocks.furnace.finish
+FurnaceStartSmeltEvent: blocks.furnace.start
+InventoryClickEvent: players.inventory.click
+InventoryCloseEvent: players.inventory.close
+InventoryCreativeEvent: players.inventory.click.creative
+InventoryDragEvent: players.inventory.drag
+InventoryEvent: players.inventory
+InventoryInteractEvent: players.inventory.interact
+InventoryMoveItemEvent: players.inventory.item.move
+InventoryOpenEvent: players.inventory.open
+InventoryPickupItemEvent: players.item.pickup
+PrepareAnvilEvent: blocks.anvil.prepare
+PrepareItemCraftEvent: players.craft.prepare
+PrepareSmithingEvent: blocks.smithing.prepare
+SmithItemEvent: blocks.smithing.finish
+TradeSelectEvent: players.trade.select
+AsyncPlayerChatEvent: players.chat
+AsyncPlayerPreLoginEvent: players.pre_login
+PlayerAdvancementDoneEvent: players.advancement
+PlayerAnimationEvent: players.animation
+PlayerArmorStandManipulateEvent: players.armor_stand.manipulate
+PlayerBedEnterEvent: players.bed.enter
+PlayerBedLeaveEvent: players.bed.leave
+PlayerBucketEmptyEvent: players.bucket.empty
+PlayerBucketEntityEvent: entities.pickup.bucket by player
+PlayerBucketEvent: players.bucket
+PlayerBucketFillEvent: players.bucket.fill
+PlayerChangedMainHandEvent: players.main_hand.change
+PlayerChangedWorldEvent: players.world.change
+PlayerChannelEvent: players.channel
+PlayerCommandPreprocessEvent: players.command.preprocess
+PlayerCommandSendEvent: players.command.send
+PlayerDropItemEvent: players.drop.item
+PlayerEditBookEvent: players.book.edit
+PlayerEggThrowEvent: players.egg.throw
+PlayerEvent: players
+PlayerExpChangeEvent: players.exp
+PlayerFishEvent: players.fish
+PlayerGameModeChangeEvent: players.gamemode
+PlayerHarvestBlockEvent: blocks.harvest by player
+PlayerInteractAtEntityEvent: players.right_click.entity
+PlayerInteractEvent: players.right_click
+PlayerItemBreakEvent: players.item.break
+PlayerItemConsumeEvent: players.item.consume
+PlayerItemDamageEvent: players.item.damage
+PlayerItemHeldEvent: players.held_item.change
+PlayerItemMendEvent: players.item.mend
+PlayerJoinEvent: players.join
+PlayerKickEvent: players.kick
+PlayerLevelChangeEvent: players.level
+PlayerLocaleChangeEvent: players.language
+PlayerLoginEvent: players.login
+PlayerMoveEvent: players.move
+PlayerPickupArrowEvent: players.arrow.pickup
+EntityPickupItemEvent: entities.item.pickup
+PlayerPortalEvent: players.portal
+PlayerQuitEvent: players.quit
+PlayerRecipeDiscoverEvent: players.recipe.discover
+PlayerRegisterChannelEvent: players.channel.register
+PlayerResourcePackStatusEvent: players.resource_pack.status
+PlayerRespawnEvent: players.respawn
+PlayerRiptideEvent: players.riptide
+PlayerShearEntityEvent: players.shear.entity
+PlayerStatisticIncrementEvent: players.statistic
+PlayerSwapHandItemsEvent: players.swap_hand_items
+PlayerTakeLecternBookEvent: players.lectern.take
+PlayerTeleportEvent: players.teleport
+PlayerToggleFlightEvent: players.flight.toggle
+PlayerToggleSneakEvent: players.sneak
+PlayerToggleSprintEvent: players.sprint
+PlayerUnleashEntityEvent: entities.leash.remove by player
+PlayerUnregisterChannelEvent: players.channel.unregister
+PlayerVelocityEvent: players.velocity
+RaidEvent: raids
+RaidFinishEvent: raids.finish
+RaidSpawnWaveEvent: raids.spawn.wave
+RaidStopEvent: raids.stop
+RaidTriggerEvent: raids.triggered
+BroadcastMessageEvent: server.broadcast
+MapInitializeEvent: server.map.init
+PluginDisableEvent: server.plugin.disable
+PluginEnableEvent: server.plugin.enable
+PluginEvent: server.plugin
+RemoteServerCommandEvent: server.command
+ServerCommandEvent: server.command
+ServerEvent: server
+ServerListPingEvent: server.ping
+ServerLoadEvent: server.load
+ServiceEvent: server.service
+ServiceRegisterEvent: server.service.register
+ServiceUnregisterEvent: server.service.unregister
+TabCompleteEvent: players.tab_complete
+VehicleBlockCollisionEvent: entities.vehicle.block_collision
+VehicleCollisionEvent: entities.vehicle.collision
+VehicleCreateEvent: entities.vehicle.create
+VehicleDamageEvent: entities.vehicle.damage
+VehicleDestroyEvent: entities.vehicle.destroy
+VehicleEnterEvent: entities.vehicle.enter
+VehicleEntityCollisionEvent: entities.vehicle.collision by entity
+VehicleEvent: entities.vehicle
+VehicleExitEvent: entities.vehicle.exit
+VehicleMoveEvent: entities.vehicle.move
+VehicleUpdateEvent: entities.vehicle.update
+LightningStrikeEvent: entities.lightning.strike
+ThunderChangeEvent: entities.lightning.change
+WeatherChangeEvent: entities.weather.change
+WeatherEvent: entities.weather
+ChunkLoadEvent: worlds.chunk.load
+ChunkPopulateEvent: worlds.chunk.populate
+ChunkUnloadEvent: worlds.chunk.unload
+EntitiesLoadEvent: worlds.entity.load
+EntitiesUnloadEvent: worlds.entity.unload
+LootGenerateEvent: worlds.loot.generate
+PortalCreateEvent: worlds.portal.create
+SpawnChangeEvent: worlds.spawn_point.change
+StructureGrowEvent: worlds.structure.generate
+TimeSkipEvent: worlds.time.skip
+WorldEvent: worlds
+WorldInitEvent: worlds.world.init
+WorldLoadEvent: worlds.world.load
+WorldSaveEvent: worlds.world.save
+WorldUnloadEvent: worlds.world.unload
+ChunkEvent: worlds.chunk

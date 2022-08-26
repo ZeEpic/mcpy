@@ -1,5 +1,7 @@
 import org.bukkit.plugin.java.JavaPlugin;
 // Imports
+import org.bukkit.*;
+import org.spigotmc.*;
 %s
 
 // Plugin class

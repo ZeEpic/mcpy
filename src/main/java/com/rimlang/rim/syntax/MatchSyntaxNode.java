@@ -7,9 +7,9 @@ import java.util.List;
 
 public class MatchSyntaxNode extends SyntaxNode {
     private GenericExpression genericExpression;
-    private HashMap<Token, List<SyntaxNode>> branches;
+    private HashMap<List<Token>, List<SyntaxNode>> branches;
 
-    public MatchSyntaxNode(GenericExpression genericExpression, HashMap<Token, List<SyntaxNode>> branches) {
+    public MatchSyntaxNode(GenericExpression genericExpression, HashMap<List<Token>, List<SyntaxNode>> branches) {
         this.genericExpression = genericExpression;
         this.branches = branches;
     }
