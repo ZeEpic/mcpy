@@ -7,6 +7,9 @@ import org.spigotmc.*;
 // Plugin class
 public final class %s extends JavaPlugin implements Listener {
 
+    // Fields
+%s
+
     @Override
     public void onEnable() {
         getServer().getPluginManager().registerEvents(this, this);

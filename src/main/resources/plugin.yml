@@ -1,0 +1,4 @@
+name: RimCompiler
+version: 1.0.0
+description: The compiler for the RIM language.
+main: com.rimlang.rim.Main

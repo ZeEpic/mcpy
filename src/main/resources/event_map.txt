@@ -235,8 +235,8 @@ SpawnChangeEvent: worlds.spawn_point.change
 StructureGrowEvent: worlds.structure.generate
 TimeSkipEvent: worlds.time.skip
 WorldEvent: worlds
-WorldInitEvent: worlds.world.init
-WorldLoadEvent: worlds.world.load
-WorldSaveEvent: worlds.world.save
-WorldUnloadEvent: worlds.world.unload
+WorldInitEvent: worlds.init
+WorldLoadEvent: worlds.load
+WorldSaveEvent: worlds.save
+WorldUnloadEvent: worlds.unload
 ChunkEvent: worlds.chunk

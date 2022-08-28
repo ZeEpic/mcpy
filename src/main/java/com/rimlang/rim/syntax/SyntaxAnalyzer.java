@@ -1,5 +1,6 @@
 package com.rimlang.rim.syntax;
 
+import com.rimlang.rim.lexer.StringToken;
 import com.rimlang.rim.lexer.Token;
 import com.rimlang.rim.lexer.TokenType;
 import com.rimlang.rim.util.Strings;
@@ -7,6 +8,7 @@ import com.rimlang.rim.util.TokenUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SyntaxAnalyzer {
 
@@ -37,7 +39,7 @@ public class SyntaxAnalyzer {
                 if (codeLine.get(1).getType() != TokenType.ID) {
                     throw new RimSyntaxException(lineType + " definition must have a name", line);
                 }
-                Token name = codeLine.get(1);
+                StringToken name = (StringToken) codeLine.get(1);
                 if (codeLine.get(2).getType() != TokenType.PARENTHESES) {
                     throw new RimSyntaxException(lineType + " definition must have parentheses, even if there are zero arguments", line);
                 }
@@ -51,36 +53,40 @@ public class SyntaxAnalyzer {
                     return new CommandDefinitionSyntaxNode(name, args, syntaxNodes);
                 }
 
-                Token returnType = null;
-                if (code.get(3).getType() == TokenType.COLON) {
-                    if (code.get(4).getType() != TokenType.TYPE) {
+                StringToken returnType = null;
+                if (codeLine.get(3).getType() == TokenType.COLON) {
+                    if (codeLine.get(4).getType() != TokenType.TYPE) {
                         throw new RimSyntaxException(lineType + " has a colon, but no return type", line);
                     }
-                    returnType = code.get(4);
+                    returnType = (StringToken) codeLine.get(4);
+                }
+                if (returnType == null) {
+                    returnType = new StringToken(TokenType.TYPE, "void", line, -1);
                 }
                 return new FunctionDefinitionSyntaxNode(name, args, returnType, syntaxNodes);
             }
             case ID -> {
                 TokenType second = codeLine.get(1).getType();
                 if (second == TokenType.ASSIGNMENT_OPERATOR) {
-                    return new VariableDefinitionSyntaxNode(codeLine.get(0), new GenericExpression(TokenUtil.sub(codeLine, 2, codeLine.size())));
+                    return new VariableDefinitionSyntaxNode((StringToken) codeLine.get(0), new GenericExpression(TokenUtil.sub(codeLine, 2, codeLine.size())));
                 } else if (second == TokenType.DOT) {
                     return new ExpressionSyntaxNode(codeLine);
                 } else if (second == TokenType.PARENTHESES) {
                     List<Token> argTokens = TokenUtil.getGroup(codeLine.get(1));
                     assert argTokens != null;
                     List<GenericExpression> args = TokenUtil.split(argTokens, TokenType.COMMA)
-                            .stream().map(GenericExpression::new).toList();
+                            .stream().map(GenericExpression::new).collect(Collectors.toList());
                     if (codeLine.size() <= 2 || codeLine.get(2).getType() != TokenType.BRACE) {
                         return new ExpressionSyntaxNode(codeLine);
                     }
                     List<Token> tokens = TokenUtil.getGroup(codeLine.get(2));
                     assert tokens != null;
-                    return new ComplexFunctionCallSyntaxNode(
-                            codeLine.get(0),
-                            args,
-                            analyze(tokens)
-                    );
+                    if (codeLine.get(0) instanceof StringToken) {
+                        StringToken stringToken = (StringToken) codeLine.get(0);
+                        return new ComplexFunctionCallSyntaxNode(stringToken, args, analyze(tokens));
+                    } else {
+                        throw new RimSyntaxException("Function call must have the function name", line);
+                    }
                 }
             }
             case IF -> {

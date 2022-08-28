@@ -13,4 +13,12 @@ public class IfSyntaxNode extends SyntaxNode {
         this.booleanExpression = booleanExpression;
         this.body = body;
     }
+
+    public BooleanExpression getBooleanExpression() {
+        return booleanExpression;
+    }
+
+    public List<SyntaxNode> getBody() {
+        return body;
+    }
 }

@@ -5,6 +5,7 @@ import com.rimlang.rim.util.TokenUtil;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 public class Lexer {
 
@@ -88,7 +89,7 @@ public class Lexer {
         return groupBrackets(tokens
                 .stream()
                 .filter(t -> t.getType() != null)
-                .toList());
+                .collect(Collectors.toList()));
     }
 
     public static List<Token> groupBrackets(List<Token> code) {

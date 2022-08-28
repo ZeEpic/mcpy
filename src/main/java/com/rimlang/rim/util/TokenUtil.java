@@ -91,8 +91,8 @@ public class TokenUtil {
     }
 
     public static List<Token> getGroup(Token token) {
-        if (token instanceof GroupToken groupToken) {
-            return groupToken.getValue();
+        if (token instanceof GroupToken) {
+            return ((GroupToken) token).getValue();
         }
         return null;
     }

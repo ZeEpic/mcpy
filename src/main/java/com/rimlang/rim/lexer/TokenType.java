@@ -23,7 +23,7 @@ public enum TokenType {
     COMMAND("cmd"),
     IS("is"), BY("by"),
     TYPE(
-            "int", "string", "bool", "list", "function",
+            "num", "string", "bool", "list", "function",
             "player", "location", "world", "entity",
             "event", "args",
             "block", "item", "material",
