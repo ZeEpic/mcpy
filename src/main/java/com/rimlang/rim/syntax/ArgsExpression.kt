@@ -3,12 +3,14 @@ package com.rimlang.rim.syntax
 import com.rimlang.rim.lexer.StringToken
 import com.rimlang.rim.lexer.Token
 import com.rimlang.rim.lexer.TokenType
+import com.rimlang.rim.translation.Context
 import com.rimlang.rim.translation.Translator
+import com.rimlang.rim.util.camelCase
 import com.rimlang.rim.util.split
 import com.rimlang.rim.util.sub
 
 class ArgsExpression(tokens: List<Token>) : Expression() {
-    private val args = mutableListOf<Argument>()
+    val args = mutableListOf<Argument>()
 
     init {
         for (arg in tokens.split(TokenType.COMMA)) {
@@ -34,19 +36,18 @@ class ArgsExpression(tokens: List<Token>) : Expression() {
         }
     }
 
-    override fun translate(): String {
+    data class Argument(
+        val type: StringToken,
+        val identifier: StringToken,
+        val defaultValue: List<Token> = listOf()
+    ) {
+        fun translate(): String {
+            return Translator.toJavaType(type) + " " + identifier.value.camelCase()
+        }
+    }
+
+    override fun translate(context: Context): String {
         return args.joinToString { it.translate() }
     }
 
-    data class Argument(
-        private val type: StringToken,
-        private val identifier: StringToken,
-        private val defaultValue: List<Token> = listOf()
-    ) {
-        fun translate(): String {
-            return Translator.toJavaType(type) + " " + Translator.camelCase(
-                identifier.value
-            )
-        }
-    }
 }

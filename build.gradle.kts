@@ -34,7 +34,7 @@ dependencies {
 
 // For convenience
 println(project.gradle.gradleUserHomeDir)
-val folder = file(project.gradle.gradleUserHomeDir.path.dropLast(7) +  "\\Desktop\\Paper 1.19 Server\\plugins")
+val folder = file(project.gradle.gradleUserHomeDir.path.dropLast(7) +  "\\Desktop\\Minecraft\\Paper 1.19 Server\\plugins")
 
 tasks {
     test {
@@ -42,7 +42,7 @@ tasks {
     }
 
 //    jar {
-////        this.destinationDirectory.set(folder)
+//        this.destinationDirectory.set(folder)
 //    }
 }
 

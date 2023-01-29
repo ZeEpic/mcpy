@@ -5,7 +5,9 @@ import com.rimlang.rim.lexer.NumberToken
 import com.rimlang.rim.lexer.StringToken
 import com.rimlang.rim.lexer.TokenType
 import com.rimlang.rim.syntax.*
-import com.rimlang.rim.util.title
+import com.rimlang.rim.util.camelCase
+import com.rimlang.rim.util.classNameFromQualifiedName
+import com.rimlang.rim.util.pascalCase
 import org.eclipse.jdt.core.JavaCore
 import org.eclipse.jdt.core.ToolFactory
 import org.eclipse.jdt.core.formatter.CodeFormatter
@@ -24,9 +26,12 @@ object Translator {
     private val methods = mutableListOf<String>()
     private val fields = mutableListOf<String>()
     private var onEnable = ""
-    private val traits = mutableMapOf<String, MutableMap<String, String>>() // <class, <trait_name, type>>
+    val traits = mutableMapOf<String, MutableMap<String, String>>() // <class, <trait_name, type>>
 
     private val eventMap = HashMap<String, String>()
+
+
+    private val globalContext = GlobalContext()
 
     init {
         val eventMapString = "event_map.txt".asResource()
@@ -43,6 +48,26 @@ object Translator {
     fun translateGlobalScope(nodes: List<SyntaxNode>) {
         val eventCount = HashMap<String, Int>()
         var hasTimer = false
+        nodes.filterIsInstance<FunctionDefinitionSyntaxNode>()
+            .forEach {
+                val id = it.identifier.value.camelCase()
+                methods += "private ${toJavaType(it.returnType)} $id(${it.args.translate(globalContext)}) {"
+                val variableArgs = it.args.args.map { arg ->
+                    VariableIdentifier(arg.identifier.value, arg.type.value, "", arg.identifier.line)
+                }
+                methods += translate(it.body, FunctionContext(id,
+                    (globalContext.identifiers + variableArgs).toMutableList()
+                ))
+                methods += "}\n"
+                globalContext.identifiers += FunctionIdentifier(id,
+                    it.args
+                        .args
+                        .map { arg -> arg.translate().split(" ") }
+                        .associate { (a, b) -> a to b },
+                    it.returnType.value,
+                    it.identifier.line
+                )
+            }
         for (node in nodes) {
             when (node) {
                 is ComplexFunctionCallSyntaxNode -> {
@@ -52,7 +77,7 @@ object Translator {
                                 .filterIsInstance<StringToken>()
                                 .joinToString("") { it.value }
                             if (event == "server.start") {
-                                onEnable += translate(node.body)
+                                onEnable += translate(node.body, EventContext("onEnable", globalContext.identifiers))
                             } else {
                                 val spigotEvent = eventMap[event] ?: ""
                                 require(spigotEvent.isNotEmpty()) {
@@ -62,8 +87,8 @@ object Translator {
                                                     else eventCount[event]!! + 1
                                 val count = eventCount[event]!!.toStringWithoutZero()
                                 events += "@EventHandler"
-                                events += "public void on$spigotEvent$count($spigotEvent event) {"
-                                events += translate(node.body)
+                                events += "public void on$spigotEvent$count(${spigotEvent.classNameFromQualifiedName()} event) {"
+                                events += translate(node.body, EventContext(spigotEvent, globalContext.identifiers))
                                 events += "}"
                             }
                         }
@@ -75,7 +100,8 @@ object Translator {
                             }
                             node.body.filterIsInstance<VariableDefinitionSyntaxNode>()
                                 .forEach {
-                                    traits[traitName]!![it.identifier.value] = it.initialValue.resultType
+                                    it.initialValue.translate(globalContext)
+                                    traits[traitName]!![it.identifier.value] = it.initialValue.resultType ?: "String"
                                 }
                         }
                         "timer" -> {
@@ -90,25 +116,29 @@ object Translator {
                                 "Timer argument must be a number (at line ${secondsToken.line})."
                             }
                             onEnable += "beginTimer(${secondsToken.value}, () -> {\n"
-                            onEnable += translate(node.body)
+                            onEnable += translate(node.body, TimerContext(globalContext.identifiers))
                             onEnable += "\n});\n"
                         }
                     }
                 }
                 is CommandDefinitionSyntaxNode -> {
                     // TODO: Implement command arguments
-                    onEnable += "getCommand(\"${camelCase(node.identifier.value)}\""
+                    onEnable += "getCommand(\"${node.identifier.value.camelCase()}\""
                     onEnable += ").setExecutor((sender, command, label, args) -> {\n"
-                    onEnable += translate(node.body)
+                    onEnable += translate(node.body, CommandContext(globalContext.identifiers))
                     onEnable += "});\n"
                 }
-                is FunctionDefinitionSyntaxNode -> {
-                    methods += "private ${toJavaType(node.returnType)} ${camelCase(node.identifier.value)}(${node.args.translate()}) {"
-                    methods += translate(node.body)
-                    methods += "}\n"
-                }
+                is FunctionDefinitionSyntaxNode -> continue
                 is VariableDefinitionSyntaxNode -> {
-                    fields += "private var ${camelCase(node.identifier.value)} = ${node.initialValue.translate()};"
+                    fields += "private var ${node.identifier.value.pascalCase()} = ${
+                        node.initialValue.translate(VariableDefinitionContext(globalContext.identifiers))
+                    };"
+                    globalContext.identifiers += VariableIdentifier(
+                        node.identifier.value,
+                        node.initialValue.resultType ?: throw IllegalStateException("Variable must be initialized with a real value!"),
+                        node.initialValue.translate(globalContext),
+                        node.identifier.line
+                    )
                 }
                 else -> {
                     throw IllegalStateException("Node type " + node::class.simpleName + " is not allowed in global scope.")
@@ -139,31 +169,25 @@ object Translator {
         throw ClassNotFoundException("Type " + type + " not found (on line " + typeToken.line + ").")
     }
 
-    fun camelCase(value: String): String {
-        val pascalCase = pascalCase(value)
-        return pascalCase[0].lowercase() + pascalCase.drop(1)
-    }
-
-    private fun pascalCase(value: String)
-        = value.split("_").joinToString("") { title(it) }
-
-    private fun translate(nodes: List<SyntaxNode>): String {
+    private fun translate(nodes: List<SyntaxNode>, context: Context): String {
         var builder = ""
         for (node in nodes) {
             when (node) {
                 is IfSyntaxNode -> {
                     node.branches.forEach {
-                        val value = it.type.value.takeUnless { v -> v == "elif" } ?: "else if"
-                        builder += "$value (${it.booleanExpression.translate()}) {"
-                        builder += translate(it.body)
+                        val value = it.type.value.takeUnless { v -> v in TokenType.ELIF.values } ?: "else if"
+                        builder += "$value ${if (value != "else") "(${it.booleanExpression.translate(context)})" else ""} {"
+                        builder += translate(it.body, context)
                         builder += "} "
                     }
                 }
                 is ExpressionSyntaxNode -> {
+                    println(node)
                 }
                 is ForeachSyntaxNode -> {
-                    builder += "for (${node.genericExpression.resultType} ${pascalCase(node.loopIdentifier.value)} : ${node.genericExpression.translate()}) {\n"
-                    builder += translate(node.body)
+                    val loopType = node.genericExpression.resultType ?: "Object"
+                    builder += "for ($loopType ${node.loopIdentifier.value.camelCase()} : ${node.genericExpression.translate(ForeachContext(loopType, globalContext.identifiers))}) {\n"
+                    builder += translate(node.body, context)
                     builder += "}\n"
                 }
                 is WhileSyntaxNode -> {
@@ -171,6 +195,15 @@ object Translator {
                 is ReturnSyntaxNode -> {
                 }
                 is VariableDefinitionSyntaxNode -> {
+                    builder += "var ${node.identifier.value.pascalCase()} = ${
+                        node.initialValue.translate(VariableDefinitionContext(globalContext.identifiers))
+                    };\n"
+                    context.identifiers += VariableIdentifier(
+                        node.identifier.value,
+                        node.initialValue.resultType ?: throw IllegalStateException("Variable must be initialized with a real value!"),
+                        node.initialValue.translate(globalContext),
+                        node.identifier.line
+                    )
                 }
             }
         }

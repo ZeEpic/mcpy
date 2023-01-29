@@ -29,7 +29,7 @@ fun analyze(code: List<Token>): List<SyntaxNode> {
 private fun processLine(codeLine: List<Token>, code: List<Token>, line: Int, beginningOfLine: Int): SyntaxNode {
     when (val first = codeLine[0].type) {
         TokenType.FUNCTION, TokenType.COMMAND -> {
-            val lineType = title(first.name)
+            val lineType = first.name.title()
             if (codeLine[1].type !== TokenType.ID) {
                 throw RimSyntaxException("$lineType definition must have a name", line)
             }
@@ -68,12 +68,14 @@ private fun processLine(codeLine: List<Token>, code: List<Token>, line: Int, beg
                     )
                 }
                 TokenType.DOT -> {
+                    println(codeLine)
                     return ExpressionSyntaxNode(codeLine)
                 }
                 TokenType.PARENTHESES -> {
                     val argTokens = getGroup(codeLine[1])
                     val args = argTokens.split(TokenType.COMMA).map(::GenericExpression)
                     if (codeLine.size <= 2 || codeLine[2].type !== TokenType.BRACE) {
+                        println(codeLine)
                         return ExpressionSyntaxNode(codeLine)
                     }
                     val tokens = getGroup(codeLine[2])
