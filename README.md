@@ -30,7 +30,7 @@ p = player("ZeEpic")
 loc = @(0, 65, 0)
 
 # function
-fn function(p: player): string {
+def function(p: player): string {
     return p.name
 }
 
@@ -125,11 +125,11 @@ if expression {
     # code
 }
 
-fn function(arg: type): return_type {
+def function(arg: type): return_type {
     # code
 }
 
-fn function(arg: type)
+def function(arg: type)
     = pass # replace with code
 
 type.property = value

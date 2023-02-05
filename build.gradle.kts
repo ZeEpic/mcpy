@@ -37,9 +37,9 @@ println(project.gradle.gradleUserHomeDir)
 val folder = file(project.gradle.gradleUserHomeDir.path.dropLast(7) +  "\\Desktop\\Minecraft\\Paper 1.19 Server\\plugins")
 
 tasks {
-    test {
-        useJUnitPlatform()
-    }
+//    test {
+//        useJUnitPlatform()
+//    }
 
 //    jar {
 //        this.destinationDirectory.set(folder)
@@ -47,7 +47,7 @@ tasks {
 }
 
 tasks.withType<ShadowJar> {
-    archiveFileName.set("RimCompiler.jar")
+    archiveFileName.set("McPyCompiler.jar")
     destinationDirectory.set(folder)
 }
 

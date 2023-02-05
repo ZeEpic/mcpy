@@ -1,4 +1,7 @@
-name: RimCompiler
+name: MinecraftPython
 version: 1.0.0
-description: The compiler for the RIM language.
+description: The compiler for the McPy language.
+authors:
+  - ZeEpic
+  - Hockus
 main: com.rimlang.rim.Main

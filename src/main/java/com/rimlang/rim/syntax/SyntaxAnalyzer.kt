@@ -1,12 +1,20 @@
 package com.rimlang.rim.syntax
 
-import com.rimlang.rim.lexer.StringToken
-import com.rimlang.rim.lexer.Token
-import com.rimlang.rim.lexer.TokenType
-import com.rimlang.rim.util.*
+import com.rimlang.rim.errors.CodeFile
+import com.rimlang.rim.lexer.token.*
+import com.rimlang.rim.syntax.node.expression.ArgsExpression
+import com.rimlang.rim.syntax.node.expression.BooleanExpression
+import com.rimlang.rim.syntax.node.expression.GenericExpression
+import com.rimlang.rim.syntax.node.control.*
+import com.rimlang.rim.syntax.node.global.CommandDefinitionSyntaxNode
+import com.rimlang.rim.syntax.node.global.ComplexFunctionCallSyntaxNode
+import com.rimlang.rim.syntax.node.global.FunctionDefinitionSyntaxNode
+import com.rimlang.rim.syntax.node.syntax.ExpressionSyntaxNode
+import com.rimlang.rim.syntax.node.syntax.SyntaxNode
+import com.rimlang.rim.syntax.node.syntax.VariableDefinitionSyntaxNode
+import com.rimlang.rim.title
 
-@Throws(RimSyntaxException::class)
-fun analyze(code: List<Token>): List<SyntaxNode> {
+fun analyze(code: List<Token>, file: CodeFile): List<SyntaxNode> {
     val result = mutableListOf<SyntaxNode>()
     val codeLine = mutableListOf<Token>()
     var beginningOfLine = 0
@@ -17,7 +25,7 @@ fun analyze(code: List<Token>): List<SyntaxNode> {
         }
         if (t.type === TokenType.EOL || i == code.size - 1) {
             if (codeLine.isEmpty()) continue
-            result += processLine(codeLine, code, codeLine[0].line, beginningOfLine)
+            result += processLine(codeLine, code, codeLine[0].line, beginningOfLine, file)
             codeLine.clear()
             beginningOfLine = i + 1
         }
@@ -25,69 +33,67 @@ fun analyze(code: List<Token>): List<SyntaxNode> {
     return result
 }
 
-@Throws(RimSyntaxException::class)
-private fun processLine(codeLine: List<Token>, code: List<Token>, line: Int, beginningOfLine: Int): SyntaxNode {
+private fun processLine(codeLine: List<Token>, code: List<Token>, line: Int, beginningOfLine: Int, file: CodeFile): SyntaxNode {
     when (val first = codeLine[0].type) {
         TokenType.FUNCTION, TokenType.COMMAND -> {
             val lineType = first.name.title()
-            if (codeLine[1].type !== TokenType.ID) {
-                throw RimSyntaxException("$lineType definition must have a name", line)
+            com.rimlang.rim.errors.require(codeLine[1].type === TokenType.ID, codeLine[1]) {
+                "$lineType definition must have a name"
             }
             val name = codeLine[1] as StringToken
-            if (codeLine[2].type !== TokenType.PARENTHESES) {
-                throw RimSyntaxException(
-                    "$lineType definition must have parentheses, even if there are zero arguments",
-                    line
-                )
+            com.rimlang.rim.errors.require(codeLine[2].type === TokenType.PARENTHESES, codeLine[2]) {
+                "$lineType definition must have parentheses, even if there are zero arguments"
             }
-            val args = ArgsExpression(getGroup(codeLine[2]))
+            val args = ArgsExpression(getGroup(codeLine[2]), codeLine[2])
             val body = codeLine[codeLine.size - 1]
-            if (body.type !== TokenType.BRACE) {
-                throw RimSyntaxException("$lineType must have a code body", line)
+            com.rimlang.rim.errors.require(body.type === TokenType.BRACE, body) {
+                "$lineType must have a code body"
             }
-            val syntaxNodes = analyze(getGroup(body))
+            val syntaxNodes = analyze(getGroup(body), file)
             if (first === TokenType.COMMAND) { // Command doesn't have a return type
-                return CommandDefinitionSyntaxNode(name, args, syntaxNodes)
+                return CommandDefinitionSyntaxNode(name, args, syntaxNodes, codeLine[0])
             }
             val returnType = if (codeLine[3].type === TokenType.COLON) {
-                if (codeLine[4].type !== TokenType.TYPE) {
-                    throw RimSyntaxException("$lineType has a colon, but no return type", line)
+                com.rimlang.rim.errors.require(codeLine[4].type === TokenType.TYPE, codeLine[4]) {
+                    "$lineType has a colon, but no return type"
                 }
                 codeLine[4] as StringToken
             } else {
-                StringToken(TokenType.TYPE, "void", line, -1)
+                StringToken(TokenType.TYPE, "void", line, -1, file)
             }
-            return FunctionDefinitionSyntaxNode(name, args, returnType, syntaxNodes)
+            return FunctionDefinitionSyntaxNode(name, args, returnType, syntaxNodes, codeLine[0])
         }
         TokenType.ID -> {
             when (val second = codeLine[1].type) {
                 TokenType.ASSIGNMENT_OPERATOR -> {
                     return VariableDefinitionSyntaxNode(
                         codeLine[0] as StringToken,
-                        GenericExpression(sub(codeLine, 2, codeLine.size))
+                        GenericExpression(sub(codeLine, 2, codeLine.size), codeLine[2]),
+                        codeLine[0]
                     )
                 }
                 TokenType.DOT -> {
-                    println(codeLine)
-                    return ExpressionSyntaxNode(codeLine)
+                    return ExpressionSyntaxNode(codeLine, codeLine[0])
                 }
                 TokenType.PARENTHESES -> {
                     val argTokens = getGroup(codeLine[1])
-                    val args = argTokens.split(TokenType.COMMA).map(::GenericExpression)
+                    val args = argTokens.split(TokenType.COMMA).map { GenericExpression(it, it[0]) }
                     if (codeLine.size <= 2 || codeLine[2].type !== TokenType.BRACE) {
-                        println(codeLine)
-                        return ExpressionSyntaxNode(codeLine)
+                        return ExpressionSyntaxNode(codeLine, codeLine[0])
                     }
                     val tokens = getGroup(codeLine[2])
                     return if (codeLine[0] is StringToken) {
                         val stringToken = codeLine[0] as StringToken
-                        ComplexFunctionCallSyntaxNode(stringToken, args, analyze(tokens))
+                        ComplexFunctionCallSyntaxNode(stringToken, args, analyze(tokens, file), codeLine[0])
                     } else {
-                        throw RimSyntaxException("Function call must have the function name", line)
+                        com.rimlang.rim.errors.error("Function call must have the function name.", codeLine[0])
                     }
                 }
                 else -> {
-                    throw RimSyntaxException("Unexpected token after identifier of type ${second.name}", line)
+                    com.rimlang.rim.errors.error(
+                        "Unexpected token after identifier of type ${second.name}",
+                        codeLine[1]
+                    )
                 }
             }
         }
@@ -97,76 +103,81 @@ private fun processLine(codeLine: List<Token>, code: List<Token>, line: Int, beg
             for (i in split.indices) {
                 val branch = split[i]
                 if (branch.isEmpty()) continue
-                if (branch[0].type !in listOf(TokenType.IF, TokenType.ELSE, TokenType.ELIF)) {
-                    throw RimSyntaxException("If statement can't have a branch starting with ${branch[0].type.name.lowercase()}.", line)
+                com.rimlang.rim.errors.require(
+                    branch[0].type in listOf(TokenType.IF, TokenType.ELSE, TokenType.ELIF),
+                    branch[0]
+                ) {
+                    "If statement can't have a branch starting with ${branch[0].type.name.lowercase()}."
                 }
-                if (i != split.lastIndex && branch[0].type == TokenType.ELSE) {
-                    throw RimSyntaxException("Else statement can't be followed by another branch", line)
+                require(i == split.lastIndex || branch[0].type != TokenType.ELSE) {
+                    "Else statement must be the last branch of an if statement."
                 }
-                if (i != 0 && branch[0].type == TokenType.IF) {
-                    throw RimSyntaxException("If statement can't be preceded by another branch", line)
+                require(i == 0 || branch[0].type != TokenType.IF) {
+                    "If statement can't be preceded by another branch."
                 }
                 branches += ConditionalBranch(
                     branch[0] as StringToken,
-                    BooleanExpression(branch.drop(1).dropLast(1)),
-                    analyze(getGroup(branch.last()))
+                    BooleanExpression(branch.drop(1).dropLast(1), branch[1]),
+                    analyze(getGroup(branch.last()), file)
                 )
             }
-            if (branches.isEmpty()) {
-                throw RimSyntaxException("If statement must have a code body", line)
+            require(branches.isNotEmpty()) {
+                "If statement must have a code body"
             }
-            return IfSyntaxNode(branches)
+            return IfSyntaxNode(branches, codeLine[0])
         }
         TokenType.WHILE -> {
             val body = codeLine.last()
-            if (body.type !== TokenType.BRACE) {
-                throw RimSyntaxException("While statement must have code body", line)
+            require(body.type === TokenType.BRACE) {
+                "While statement must have code body"
             }
             return WhileSyntaxNode(
-                BooleanExpression(sub(codeLine, 1, codeLine.size - 1)),
-                analyze(getGroup(body))
+                BooleanExpression(sub(codeLine, 1, codeLine.size - 1), codeLine[1]),
+                analyze(getGroup(body), file),
+                codeLine[0]
             )
         }
         TokenType.MATCH -> {
             val bodyToken = codeLine.last()
-            if (bodyToken.type !== TokenType.BRACE) {
-                throw RimSyntaxException("Match statement must have code body", line)
+            require(bodyToken.type === TokenType.BRACE) {
+                "Match statement must have code body"
             }
             val body = getGroup(bodyToken)
             val branches = HashMap<List<Token>, List<SyntaxNode>>()
             body.split(TokenType.EOL).forEach {
                 val branchBodyToken = it.last()
-                if (branchBodyToken.type !== TokenType.BRACE) {
-                    throw RimSyntaxException("Match branch must have code body", branchBodyToken.line)
+                require(branchBodyToken.type === TokenType.BRACE) {
+                    "Match branch must have code body"
                 }
                 branches[sub(it, 0, it.lastIndex)] =
-                    analyze(getGroup(branchBodyToken))
+                    analyze(getGroup(branchBodyToken), file)
             }
             return MatchSyntaxNode(
-                GenericExpression(sub(codeLine, 1, codeLine.size - 1)),
-                branches
+                GenericExpression(sub(codeLine, 1, codeLine.size - 1), codeLine[1]),
+                branches,
+                codeLine[0]
             )
         }
         TokenType.RETURN -> {
-            return ReturnSyntaxNode(GenericExpression(sub(code, beginningOfLine + 2)))
+            return ReturnSyntaxNode(GenericExpression(sub(code, beginningOfLine + 2), code[beginningOfLine + 2]), code[beginningOfLine + 1])
         }
         TokenType.FOR -> {
             val body = codeLine[codeLine.size - 1]
-            if (body.type !== TokenType.BRACE) {
-                throw RimSyntaxException("For each statement must have code body", line)
+            require(body.type === TokenType.BRACE) {
+                "For loop must have code body"
             }
-            if (codeLine[2].type !== TokenType.IN) {
-                throw RimSyntaxException("For loop must have 'in' token", line)
+            require(codeLine[2].type === TokenType.IN) {
+                "For loop must have the 'in' keyword"
             }
             return ForeachSyntaxNode(
                 codeLine[1] as StringToken,
-                GenericExpression(sub(codeLine, 3, codeLine.size - 1)),
-                analyze(getGroup(body))
+                GenericExpression(sub(codeLine, 3, codeLine.size - 1), codeLine[3]),
+                analyze(getGroup(body), file),
+                codeLine[1]
             )
         }
         else -> {
-            println(codeLine)
-            throw RimSyntaxException("Illegal start to line", line)
+            com.rimlang.rim.errors.error("Illegal start to line", codeLine[0])
         }
     }
 }

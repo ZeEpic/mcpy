@@ -1,7 +1,12 @@
 package com.rimlang.rim.lexer
 
-import com.rimlang.rim.util.nextToken
-import com.rimlang.rim.util.sub
+import com.rimlang.rim.lexer.token.*
+import com.rimlang.rim.lexer.token.GroupToken
+import com.rimlang.rim.lexer.token.NumberToken
+import com.rimlang.rim.lexer.token.StringToken
+import com.rimlang.rim.errors.CodeFile
+import com.rimlang.rim.lexer.token.nextToken
+import com.rimlang.rim.lexer.token.sub
 
 object Lexer {
 
@@ -9,13 +14,13 @@ object Lexer {
     private var lineCharacter = -1
     private var i = 0
 
-    fun lex(code: String): List<Token> {
+    fun lex(code: CodeFile): List<Token> {
         line = 0
         lineCharacter = 0
         i = 0
         val tokens = mutableListOf<Token>()
         var token = ""
-        val charArray = code.toCharArray()
+        val charArray = code.text.toCharArray()
         while (i < charArray.size) {
 
             // Add to token
@@ -29,7 +34,7 @@ object Lexer {
             // Identifier or number
             if (token.isNotEmpty()) {
                 if (token matches Regex("-?\\d+(\\.\\d+)?")) {
-                    tokens.add(NumberToken(TokenType.NUMBER_LITERAL, token.toDouble(), line, lineCharacter))
+                    tokens.add(NumberToken(TokenType.NUMBER_LITERAL, token.toDouble(), line, lineCharacter, code))
                 } else {
                     val type = findTokenType(token) // Search for matching keywords
                     tokens.add(
@@ -37,7 +42,8 @@ object Lexer {
                             type ?: TokenType.ID,
                             token,
                             line,
-                            lineCharacter
+                            lineCharacter,
+                            code
                         )
                     )
                 }
@@ -46,7 +52,7 @@ object Lexer {
 
             // New line
             if (string == "\n") {
-                tokens.add(StringToken(TokenType.EOL, "\\n", line, lineCharacter))
+                tokens.add(StringToken(TokenType.EOL, "\\n", line, lineCharacter, code))
                 if (nextCharacter(charArray)) break
                 continue
             }
@@ -57,7 +63,7 @@ object Lexer {
                     if (nextCharacter(charArray)) break
                     string = charArray[i].toString()
                 }
-                tokens.add(StringToken(TokenType.EOL, "\\n", line, lineCharacter))
+                tokens.add(StringToken(TokenType.EOL, "\\n", line, lineCharacter, code))
                 if (nextCharacter(charArray)) break
                 continue
             }
@@ -72,7 +78,7 @@ object Lexer {
                     if (nextCharacter(charArray)) break
                     string = charArray[i].toString()
                 }
-                tokens.add(StringToken(TokenType.STRING_LITERAL, token, line, lineCharacter))
+                tokens.add(StringToken(TokenType.STRING_LITERAL, token, line, lineCharacter, code))
                 token = ""
             }
 
@@ -80,7 +86,7 @@ object Lexer {
             val type = findTokenType(string)
             if (i == charArray.size - 1) {
                 if (type != null) {
-                    tokens.add(StringToken(type, string, line, lineCharacter))
+                    tokens.add(StringToken(type, string, line, lineCharacter, code))
                 }
                 if (nextCharacter(charArray)) break
                 continue
@@ -91,12 +97,12 @@ object Lexer {
             val doubleTokenType = findTokenType(doubleToken)
             if (doubleTokenType == null) {
                 if (type != null) {
-                    tokens.add(StringToken(type, string, line, lineCharacter))
+                    tokens.add(StringToken(type, string, line, lineCharacter, code))
                 }
                 if (nextCharacter(charArray)) break
                 continue
             }
-            tokens.add(StringToken(doubleTokenType, doubleToken, line, lineCharacter))
+            tokens.add(StringToken(doubleTokenType, doubleToken, line, lineCharacter, code))
             if (nextCharacter(charArray)) break
             if (nextCharacter(charArray)) break
         }
@@ -115,7 +121,8 @@ object Lexer {
                     token.type,
                     groupBrackets(sub(code, j + 1, end)),
                     token.line,
-                    token.character
+                    token.character,
+                    token.file
                 )
                 groupedCode.add(group)
                 j = end + 1
