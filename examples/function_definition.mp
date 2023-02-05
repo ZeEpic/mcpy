@@ -1,3 +1,3 @@
-def function_definition(arg1: str, arg2: num): bool {
-    return true
+def pythagorean_theorem(a: num, b: num, c: num): bool {
+    return sqrt(a**2 + b**2) == c**2
 }
