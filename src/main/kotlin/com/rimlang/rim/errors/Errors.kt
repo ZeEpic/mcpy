@@ -68,7 +68,7 @@ fun error(message: String, token: Token): Nothing {
 @OptIn(ExperimentalContracts::class)
 fun require(condition: Boolean, token: Token, message: () -> String) {
     contract {
-        returns() implies condition
+        returns() implies condition // only continues the code if the condition is true and the requirement is met
     }
     if (!condition) {
         error(message(), token)

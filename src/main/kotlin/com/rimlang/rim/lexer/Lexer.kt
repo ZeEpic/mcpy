@@ -1,5 +1,6 @@
 package com.rimlang.rim.lexer
 
+import com.rimlang.rim.compiler.CompilerPhase
 import com.rimlang.rim.lexer.token.*
 import com.rimlang.rim.lexer.token.GroupToken
 import com.rimlang.rim.lexer.token.NumberToken
@@ -8,7 +9,7 @@ import com.rimlang.rim.errors.CodeFile
 import com.rimlang.rim.lexer.token.nextToken
 import com.rimlang.rim.lexer.token.sub
 
-object Lexer {
+class Lexer : CompilerPhase {
 
     private var line = -1
     private var lineCharacter = -1

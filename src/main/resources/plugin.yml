@@ -4,4 +4,4 @@ description: The compiler for the McPy language.
 authors:
   - ZeEpic
   - Hockus
-main: com.rimlang.rim.Main
+main: com.rimlang.rim.RimCompiler
