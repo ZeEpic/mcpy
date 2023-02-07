@@ -1,0 +1,1 @@
+# This is a comment, and it will be ignored by the compiler since it starts with a # symbol.

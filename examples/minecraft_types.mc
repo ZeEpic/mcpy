@@ -5,19 +5,35 @@ def minecraft_types() {
 
     # An offline player like:
     offline = offline_player("ZeEpic")
-    # Just be careful because any code you run afterwards will be async, which can cause issues!
+    # Just be careful because this can be laggy
+
+    # Worlds:
+    main_world = world("world")
+
+    # Locations are in this format: world@(x, y, z) or location(world, x, y, z)
+    loc = main_world@(0, 0, 0)
+    # You can find the block at a location like this:
+    block1 = loc.block
 
     # You can reference the location of a player/entity like:
     player_location = @p
 
-    # You can get a material with it's uppercase name:
-    m = IRON
+    # You can get a material with it's uppercase name
+    # Be careful, some materials will be different from the ones you expect in Minecraft
+    mat = IRON
 
     # You can get an entity in the same way:
     creeper = CREEPER
 
     # You can spawn an entity like:
     creeper.location = @p
+
+    # You can change the data of an entity by doing this:
+    horse = HORSE
+    horse.location = @p
+    data = horse.data() # note: this won't work for every mob! some don't have any data
+    data.color = BLACK
+
 
     # Item has many forms:
     item1 = item(IRON_SWORD)
@@ -30,16 +46,14 @@ def minecraft_types() {
     item1.lore = ["This sword is cooler than the other one.", "It's also stronger!"]
     item1.enchant(SHARPNESS, 2)
 
-    # Worlds:
-    world = world("world")
-
     # You can manipulate a block:
-    block1 = world@(0, 0, 0)
-    block1.type = IRON_BLOCK
+    block1.type = CAMPFIRE
+    block_data = block1.data()
+    block_data.signal_fire = false # turns off the campfire
 
     # You can manipulate a player:
     p.gamemode = CREATIVE
-    p.teleport(world@(0, 2, 0))
+    p.teleport(main_world@(0, 2, 0))
     p.give(item1)
 
     # Permissions:
