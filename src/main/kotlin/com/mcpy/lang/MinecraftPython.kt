@@ -7,7 +7,7 @@ import com.mcpy.lang.translation.JavaTranslator
 import org.bukkit.plugin.java.JavaPlugin
 import java.io.FileWriter
 
-class RimCompiler : JavaPlugin() {
+class MinecraftPython : JavaPlugin() {
 
     override fun onEnable() {
 
@@ -17,7 +17,7 @@ class RimCompiler : JavaPlugin() {
         val translator = JavaTranslator()
 
         // Compile
-        val code = CodeFile("code.rim".asResource(), "code.rim")
+        val code = CodeFile("code.mc".asResource(), "code.mc")
         val tokens = lexer.lex(code)
         val nodes = analyzer.analyze(tokens, code)
         translator.translateGlobalScope(nodes)
@@ -30,5 +30,3 @@ class RimCompiler : JavaPlugin() {
     }
 
 }
-
-fun String.asResource() = object {}.javaClass.getResource("/$this")!!.readText()

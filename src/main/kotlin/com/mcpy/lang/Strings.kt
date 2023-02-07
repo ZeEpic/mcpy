@@ -21,3 +21,5 @@ fun String.pascalCase()
 
 val String.clazz: Class<*>
     get() = Class.forName(this)
+
+fun String.asResource() = object {}.javaClass.getResource("/$this")!!.readText()

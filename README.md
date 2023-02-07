@@ -1,4 +1,4 @@
-## RIM Language
+## Minecraft Python Language
 
 
 ### Some goals

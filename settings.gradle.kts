@@ -1,1 +1,1 @@
-rootProject.name = "rim"
+rootProject.name = "mcpy"
