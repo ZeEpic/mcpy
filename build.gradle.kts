@@ -4,11 +4,15 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     id("java")
     id("com.github.johnrengelman.shadow") version "7.1.2"
-    kotlin("jvm") version "1.7.0"
+    kotlin("jvm") version "1.8.0"
+    id("net.minecrell.plugin-yml.bukkit") version "0.5.2"
 }
 
-group = "com.rimlang"
-version = "1.0-SNAPSHOT"
+val projectName = "MinecraftPython"
+group = "com.mcpy"
+val ver = "1.0.0"
+version = ver
+val mcVersion = "1.19.3"
 
 repositories {
     mavenCentral()
@@ -19,13 +23,12 @@ repositories {
 dependencies {
     // JetBrains
     implementation(kotlin("stdlib-jdk8"))
-    implementation("org.jetbrains:annotations:23.0.0")
 
     implementation("org.eclipse.jdt:core:3.3.0-v_771")
+    implementation("com.google.googlejavaformat:google-java-format:1.15.0")
 
     // Dependencies for the plugin
-    compileOnly("io.papermc.paper:paper-api:1.19.2-R0.1-SNAPSHOT")
-    implementation("com.google.googlejavaformat:google-java-format:1.15.0")
+    compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
 
     // Tests
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
@@ -47,7 +50,7 @@ tasks {
 }
 
 tasks.withType<ShadowJar> {
-    archiveFileName.set("McPyCompiler.jar")
+    archiveFileName.set("MinecraftPython.jar")
     destinationDirectory.set(folder)
 }
 
@@ -58,4 +61,13 @@ tasks.withType<KotlinCompile> {
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {
     jvmTarget = "1.8"
+}
+
+bukkit {
+    main = "$group.lang.$projectName"
+    name = projectName
+    description = "A compiler!"
+    version = ver
+    authors = listOf("ZeEpic", "Hockus")
+    apiVersion = mcVersion.substring(0, 4)
 }

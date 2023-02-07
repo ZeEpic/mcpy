@@ -1,0 +1,23 @@
+package com.mcpy.lang
+
+fun String.title()
+    = this.split(" ")
+        .joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
+
+fun String.snakeCase()
+    = this.replace("(?<!^)[A-Z]".toRegex(), "_$0").lowercase()
+
+fun String.classNameFromQualifiedName()
+    = this.split(".").last()
+
+
+fun String.camelCase(): String {
+        val pascalCase = this.pascalCase()
+        return pascalCase.replaceFirstChar { it.lowercase() }
+}
+
+fun String.pascalCase()
+        = this.split("_").joinToString("") { it.title() }
+
+val String.clazz: Class<*>
+    get() = Class.forName(this)
