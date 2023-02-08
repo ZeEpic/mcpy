@@ -20,7 +20,8 @@ enum class TokenType(vararg values: String) {
     COMMA(","), DOT("."), COLON(":"), AT("@"), IF("if"), ELSE("else"), ELIF("elif"), WHILE("while"), FOR("for"), MATCH("match"), IN(
         "in"
     ),
-    RETURN("return"), FUNCTION("def"), PASS("pass"), COMMAND("cmd"), IS("is"), BY("by"), TYPE(
+    COMMAND("cmd"), TRAIT("trait"), WHEN("when"), TIMER("timer"), GUI("gui"),
+    RETURN("return"), FUNCTION("def"), PASS("pass"), IS("is"), BY("by"), TYPE(
         "num", "string", "bool", "list", "function", "time",
         "player", "location", "world", "entity",
         "args",
