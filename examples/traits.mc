@@ -8,10 +8,10 @@ trait game_level(level: num, received: time) by player
 cmd level(target: player, level: num = -1) {
     aliases = ["set-level", "lvl", "setlvl"]
     if level < 0 {
-        sender.send("{target.name} is level {target.game_level.level}.")
-        target.game_level.received = now()
+        sender.send("{target.name} has been level {target.game_level.level} since {target.game_level.received}.")
         return
     }
     target.game_level = level
     sender.send("{target.name} is now level {level}.")
+    target.game_level.received = now()
 }

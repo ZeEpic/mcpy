@@ -1,9 +1,9 @@
 def collections() {
-    my_list = [] # this can contain anything seperated by commas
+    my_list = [] # this can contain anything seperated by commas like [24, 23, 42, 12]
     my_list += 1
-    # You can only add things to the list of the same type as whatever already in it.
+    # You can only add things to the list of the same type as whatever already in it
     # If a number (or any type) is added to an empty list that's never been used before, it will become
-    # a list of numbers permanently.
+    # a list of numbers permanently. If a player is added to an empty list, it will become a list of players
     first = my_list[0] # indexing starts at 0 and you can get the item and some index like this
     print(len(my_list)) # this prints the length of the list
     # If you want to check if a list contains an item, use this:

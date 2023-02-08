@@ -55,6 +55,7 @@ def minecraft_types() {
     p.gamemode = CREATIVE
     p.teleport(main_world@(0, 2, 0))
     p.give(item1)
+    # Note: you can get a list of all online players with the 'players' variable
 
     # Permissions:
     perms = permission("cool.stuff")

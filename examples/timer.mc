@@ -1,4 +1,4 @@
-# Define a timer called "clock"
+# Define a timer function called "clock"
 # It's automatically called every 60 seconds
 timer clock(60) {
     broadcast("1 minute has passed.")

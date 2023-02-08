@@ -20,7 +20,7 @@ gui test_gui(p: player) {
     }
     # Define what happens when each item is clicked
     # Actions are optional
-    # Must match the action keyword specifically
+    # Must match the 'action' keyword specifically
     match action {
         case "1" { # these must be the same as the legend
             p.send("You clicked item 1.")
@@ -30,6 +30,9 @@ gui test_gui(p: player) {
         }
         case "3" {
             p.send("You clicked item 3.")
+        }
+        case _ {
+            # Nothing happens when clicking anything else
         }
     }
 }
