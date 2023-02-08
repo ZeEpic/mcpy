@@ -19,7 +19,7 @@ gui test_gui(p: player) {
         "3": item(IRON_INGOT, "Item 3")
     }
     # Define what happens when each item is clicked
-    # Actions are optional
+    # Action match statement is optional
     # Must match the 'action' keyword specifically
     match action {
         case "1" { # these must be the same as the legend
