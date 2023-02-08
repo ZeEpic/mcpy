@@ -1,4 +1,4 @@
-package com.mcpy.lang.syntax
+package com.mcpy.lang.syntax.chain
 
 import com.mcpy.lang.abstractions.Name
 import com.mcpy.lang.abstractions.Type
@@ -17,26 +17,8 @@ import org.bukkit.entity.Entity
 import org.bukkit.entity.EntityType
 import org.bukkit.entity.Player
 
-data class ChainLink(
-    val idToken: StringToken,
-    val callArgs: List<List<Token>>?,
-    val context: Context,
-    val chains: List<ChainLink>,
-    val i: Int
-) {
-
-    private val previous = chains.getOrNull(i - 1)
-    private val isFirst = (i == 0)
-
-    lateinit var returnType: Type
-    lateinit var idInJava: Name
-    val parametersInJava = mutableListOf<GenericExpression>()
-
-    init {
-        generate()
-    }
-
-    private fun generate() {
+class ChainFunctionCall(val idToken: StringToken, val callArgs: List<List<Token>>, context: Context, chains: List<ChainLink>, index: Int) : ChainLink(context, chains, index) {
+    override fun generate() {
         val id = idToken.value
         if (isFirst) {
             val bukkitObjectClass = when (id) {
@@ -111,20 +93,5 @@ data class ChainLink(
             }
         }
         com.mcpy.lang.errors.error("Could not find identifier $id, at line ${idToken.line}", idToken)
-    }
-
-    private fun validateMethod(
-        baseClass: Type,
-        methodName: Name,
-        callArgs: List<List<Token>>?
-    ) {
-        val method = baseClass.type.clazz.methods
-            .filter { it.isDefault }
-            .firstOrNull { it.name == methodName.convertedValue.value || it.name.endsWith(methodName.convertedValue.value) } ?: return
-        returnType = Type(method.genericReturnType.typeName)
-        idInJava = Name(returnType.type.classNameFromQualifiedName(), Name.NameType.CLASS_NAME)
-        if (callArgs != null) {
-            parametersInJava.addAll(callArgs.map { GenericExpression(it, it[0]) })
-        }
     }
 }

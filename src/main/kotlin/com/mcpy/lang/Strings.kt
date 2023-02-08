@@ -4,6 +4,10 @@ fun String.title()
     = this.split(" ")
         .joinToString(" ") { word -> word.replaceFirstChar { it.uppercase() } }
 
+fun String.enumNameTitle()
+    = this.lowercase().replace("_", " ")
+        .title()
+
 fun String.snakeCase()
     = this.replace("(?<!^)[A-Z]".toRegex(), "_$0").lowercase()
 
