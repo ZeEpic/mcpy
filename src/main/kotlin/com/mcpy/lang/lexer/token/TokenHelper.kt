@@ -44,3 +44,16 @@ fun <E> sub(list: List<E>, from: Int, end: Int = list.size): List<E> {
 fun getGroup(token: Token): List<Token> {
     return (token as GroupToken).value
 }
+
+fun List<Token>.countRecursive(type: TokenType? = null): Int {
+    var count = 0
+    for (i in this.indices) {
+        val token = this[i]
+        if (token.type == type || type == null) count++
+        val isArgumentGroup = this.getOrNull(i - 1)?.type == TokenType.ID
+        if (token is GroupToken && !isArgumentGroup) {
+            count += token.value.countRecursive(type)
+        }
+    }
+    return count
+}

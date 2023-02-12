@@ -1,5 +1,6 @@
 package com.mcpy.lang.abstractions
 
+import com.mcpy.lang.errors.error
 import com.mcpy.lang.lexer.token.StringToken
 import com.mcpy.lang.lexer.token.TokenType
 import kotlin.reflect.KClass
@@ -8,18 +9,17 @@ class Type(val type: String) {
     constructor(clazz: KClass<*>) : this(clazz.qualifiedName!!)
 
     companion object {
-        fun toJava(typeToken: StringToken): Name {
+        fun toJava(typeToken: StringToken): Name? {
             val type = typeToken.value
             if (type.startsWith("list[") && type.endsWith("]")) {
-                return Name("java.util.List<" + toJava(
-                    StringToken(
-                        TokenType.TYPE,
-                        type.substring(5, type.length - 1),
-                        typeToken.line,
-                        typeToken.character,
-                        typeToken.file
-                    )
-                ) + ">", Name.NameType.CLASS_NAME
+                val innerType = StringToken(
+                    TokenType.ID,
+                    type.substring(5, type.length - 1),
+                    typeToken.line,
+                    typeToken.character,
+                    typeToken.file
+                )
+                return Name("java.util.List<" + (toJava(innerType) ?: error("Unknown type. This must be something like 'num' or 'str'", innerType)) + ">", Name.NameType.CLASS_NAME
                 )
             }
 
@@ -29,10 +29,7 @@ class Type(val type: String) {
                 "bool" -> "boolean"
                 "void" -> "void"
                 "player" -> "Player"
-                else -> com.mcpy.lang.errors.error(
-                    "Type " + type + " not found (on line " + typeToken.line + ").",
-                    typeToken
-                )
+                else -> return null
             }, Name.NameType.CLASS_NAME
             )
 

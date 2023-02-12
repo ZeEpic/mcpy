@@ -16,11 +16,12 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
     override fun translate(context: Context): String {
         expressionChain = generateExpressionChain(context)
         return expressionChain.joinToString(".") {
-            if (it.parametersInJava.isEmpty()) {
-                it.idInJava.value
-            } else {
-                "${it.idInJava}(${it.parametersInJava.joinToString { p -> p.translate(context) }})"
-            }
+            TODO("Redo this because now there are many types of chain links")
+//            if (it.parametersInJava.isEmpty()) {
+//                it.idInJava.value
+//            } else {
+//                "${it.idInJava}(${it.parametersInJava.joinToString { p -> p.translate(context) }})"
+//            }
         }
     }
 
@@ -29,6 +30,10 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
         for (i in tokens.indices) {
             val token = tokens[i]
             when (token.type) {
+                TokenType.PARENTHESES -> {
+                    expressionChain += ChainGroup((token as GroupToken).value, context, expressionChain, i)
+                    continue
+                }
                 TokenType.ID -> {
                     if (i == tokens.lastIndex) {
                         expressionChain += ChainProperty(token as StringToken, context, expressionChain, i)
@@ -60,7 +65,7 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
                     continue
                 }
                 TokenType.NUMBER_LITERAL -> {
-                    require(tokens.size == 1, token) {
+                    require(tokens.count() == 1, token) {
                         "A number must be the only part of an expression"
                     }
                     val number = (token as NumberToken).value

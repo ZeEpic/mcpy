@@ -2,12 +2,13 @@ package com.mcpy.lang.syntax
 
 import com.mcpy.lang.compiler.CompilerPhase
 import com.mcpy.lang.errors.CodeFile
+import com.mcpy.lang.errors.error
+import com.mcpy.lang.errors.require
 import com.mcpy.lang.lexer.token.*
 import com.mcpy.lang.syntax.node.SyntaxNode
 import com.mcpy.lang.syntax.node.control.*
 import com.mcpy.lang.syntax.node.expression.*
 import com.mcpy.lang.syntax.node.global.CommandDefinitionSyntaxNode
-import com.mcpy.lang.syntax.node.global.ComplexFunctionCallSyntaxNode
 import com.mcpy.lang.syntax.node.global.FunctionDefinitionSyntaxNode
 import com.mcpy.lang.title
 
@@ -42,16 +43,16 @@ class SyntaxAnalyzer : CompilerPhase {
         when (val first = codeLine[0].type) {
             TokenType.FUNCTION, TokenType.COMMAND -> {
                 val lineType = first.name.title()
-                com.mcpy.lang.errors.require(codeLine[1].type === TokenType.ID, codeLine[1]) {
+                require(codeLine[1].type === TokenType.ID, codeLine[1]) {
                     "$lineType definition must have a name"
                 }
                 val name = codeLine[1] as StringToken
-                com.mcpy.lang.errors.require(codeLine[2].type === TokenType.PARENTHESES, codeLine[2]) {
+                require(codeLine[2].type === TokenType.PARENTHESES, codeLine[2]) {
                     "$lineType definition must have parentheses, even if there are zero arguments"
                 }
                 val args = ArgsExpression(getGroup(codeLine[2]), codeLine[2])
                 val body = codeLine[codeLine.size - 1]
-                com.mcpy.lang.errors.require(body.type === TokenType.BRACE, body) {
+                require(body.type === TokenType.BRACE, body) {
                     "$lineType must have a code body"
                 }
                 val syntaxNodes = analyze(getGroup(body), file)
@@ -59,12 +60,12 @@ class SyntaxAnalyzer : CompilerPhase {
                     return CommandDefinitionSyntaxNode(name, args, syntaxNodes, codeLine[0])
                 }
                 val returnType = if (codeLine[3].type === TokenType.COLON) {
-                    com.mcpy.lang.errors.require(codeLine[4].type === TokenType.TYPE, codeLine[4]) {
+                    require(codeLine[4].type === TokenType.ID, codeLine[4]) {
                         "$lineType has a colon, but no return type"
                     }
                     codeLine[4] as StringToken
                 } else {
-                    StringToken(TokenType.TYPE, "void", line, -1, file)
+                    StringToken(TokenType.ID, "void", line, -1, file)
                 }
                 return FunctionDefinitionSyntaxNode(name, args, returnType, syntaxNodes, codeLine[0])
             }
@@ -91,11 +92,11 @@ class SyntaxAnalyzer : CompilerPhase {
                             val stringToken = codeLine[0] as StringToken
                             ComplexFunctionCallSyntaxNode(stringToken, args, analyze(tokens, file), codeLine[0])
                         } else {
-                            com.mcpy.lang.errors.error("Function call must have the function name.", codeLine[0])
+                            error("Function call must have the function name.", codeLine[0])
                         }
                     }
                     else -> {
-                        com.mcpy.lang.errors.error(
+                        error(
                             "Unexpected token after identifier of type ${second.name}",
                             codeLine[1]
                         )
@@ -108,7 +109,7 @@ class SyntaxAnalyzer : CompilerPhase {
                 for (i in split.indices) {
                     val branch = split[i]
                     if (branch.isEmpty()) continue
-                    com.mcpy.lang.errors.require(
+                    require(
                         branch[0].type in listOf(TokenType.IF, TokenType.ELSE, TokenType.ELIF),
                         branch[0]
                     ) {
@@ -133,7 +134,7 @@ class SyntaxAnalyzer : CompilerPhase {
             }
             TokenType.WHILE -> {
                 val body = codeLine.last()
-                require(body.type === TokenType.BRACE) {
+                require(body.type == TokenType.BRACE) {
                     "While statement must have code body"
                 }
                 return WhileSyntaxNode(
@@ -170,7 +171,7 @@ class SyntaxAnalyzer : CompilerPhase {
                 )
             }
             TokenType.FOR -> {
-                val body = codeLine[codeLine.size - 1]
+                val body = codeLine.last()
                 require(body.type === TokenType.BRACE) {
                     "For loop must have code body"
                 }
@@ -185,7 +186,7 @@ class SyntaxAnalyzer : CompilerPhase {
                 )
             }
             else -> {
-                com.mcpy.lang.errors.error("Illegal start to line", codeLine[0])
+                error("You can't start a line like that", codeLine[0])
             }
         }
     }

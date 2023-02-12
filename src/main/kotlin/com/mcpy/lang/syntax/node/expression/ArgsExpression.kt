@@ -17,7 +17,7 @@ class ArgsExpression(tokens: List<Token>, firstToken: Token) : Expression(firstT
             com.mcpy.lang.errors.require(arg[1].type === TokenType.COLON, arg[1]) {
                 "Argument must have a separating colon between the identifier and the argument type"
             }
-            com.mcpy.lang.errors.require(arg[2].type === TokenType.TYPE, arg[2]) {
+            com.mcpy.lang.errors.require(arg[2].type === TokenType.ID, arg[2]) {
                 "Argument must have type"
             }
             val type = arg[2] as? StringToken ?: continue

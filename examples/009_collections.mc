@@ -9,6 +9,8 @@ def collections() {
     # If you want to check if a list contains an item, use this:
     if 23 in my_list {
         print("23 is in the list")
+    } elif 24 not in my_list {
+        print("24 is not in the list")
     }
 
     my_dictionary = {} # this is like a list, but with keys and values pairs
