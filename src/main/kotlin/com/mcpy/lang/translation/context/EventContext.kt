@@ -1,6 +1,6 @@
 package com.mcpy.lang.translation.context
 
-import com.mcpy.lang.abstractions.Name
+import com.mcpy.lang.abstractions.Type
 import com.mcpy.lang.translation.identifier.Identifier
 
-class EventContext(val event: Name, identifiers: MutableList<Identifier>) : Context(identifiers)
+class EventContext(val event: Type, identifiers: MutableList<Identifier>) : Context(identifiers)

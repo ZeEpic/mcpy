@@ -14,7 +14,7 @@ object Events {
         // Create event map
         eventMapString.split("\n")
             .map { it.split(": ") }
-            .filter { it.size >= 2 }
+            .filter { it.size == 2 }
             .forEach { (clazz, dotEvent) ->
                 eventMap[Name(dotEvent.trim(), Name.NameType.EVENT)] = Name(clazz, Name.NameType.CLASS).toType()
             }
@@ -23,6 +23,9 @@ object Events {
     fun spigotEvent(event: Name): String? {
         if (event.value == "server.start") {
             return "onEnable"
+        }
+        if (event.value == "server.stop") {
+            return "onDisable"
         }
         val spigotEvent = eventMap[event] ?: return null
         return spigotEvent.type

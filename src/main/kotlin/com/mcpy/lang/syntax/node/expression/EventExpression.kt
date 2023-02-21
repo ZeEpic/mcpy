@@ -10,6 +10,6 @@ import com.mcpy.lang.translation.context.Context
 class EventExpression(val value: List<StringToken>, firstToken: Token) : Expression(firstToken) {
     override fun translate(context: Context)
         = Events.spigotEvent(Name(value.joinToString("") { it.value }, Name.NameType.EVENT))
-            ?: error("That event doesn't exist! Check the examples folder on GitHub for a list of events.", firstToken)
+            ?: error("That event doesn't exist! Check the examples folder on GitHub for a list of events", firstToken)
 
 }

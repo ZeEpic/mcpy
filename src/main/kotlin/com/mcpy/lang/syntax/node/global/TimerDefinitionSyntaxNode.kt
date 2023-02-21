@@ -7,8 +7,7 @@ import com.mcpy.lang.syntax.node.expression.ArgsExpression
 
 data class TimerDefinitionSyntaxNode(
     val identifier: StringToken,
-    val args: ArgsExpression,
-    val senderType: StringToken,
+    val seconds: Double,
     val body: List<SyntaxNode>,
     override val firstToken: Token
 ) : SyntaxNode(firstToken)

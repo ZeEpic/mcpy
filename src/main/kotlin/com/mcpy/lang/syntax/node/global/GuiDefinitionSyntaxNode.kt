@@ -10,10 +10,10 @@ import com.mcpy.lang.syntax.node.expression.GenericExpression
 data class GuiDefinitionSyntaxNode(
     val identifier: StringToken,
     val args: ArgsExpression,
-    val title: GenericExpression,
-    val pattern: GenericExpression,
-    val legend: GenericExpression,
-    val actionMatcher: MatchSyntaxNode?,
+    val title: String,
+    val pattern: GenericExpression, // a list of strings representing each row of the gui
+    val legend: GenericExpression, // a dictionary of strings to items representing the items in the gui
+    val actionMatcher: MatchSyntaxNode?, // a match statement that runs code when a player clicks on an item in the gui
     val body: List<SyntaxNode>,
     override val firstToken: Token
 ) : SyntaxNode(firstToken)

@@ -8,7 +8,7 @@ import com.mcpy.lang.syntax.node.expression.ArgsExpression
 data class CommandDefinitionSyntaxNode(
     val identifier: StringToken,
     val args: ArgsExpression,
-    val senderType: StringToken,
+    val senderType: StringToken?,
     val body: List<SyntaxNode>,
     override val firstToken: Token
 ) : SyntaxNode(firstToken)
