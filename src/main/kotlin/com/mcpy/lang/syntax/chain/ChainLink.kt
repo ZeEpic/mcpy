@@ -4,22 +4,16 @@ import com.mcpy.lang.abstractions.Name
 import com.mcpy.lang.abstractions.Type
 import com.mcpy.lang.classNameFromQualifiedName
 import com.mcpy.lang.clazz
-import com.mcpy.lang.lexer.token.StringToken
 import com.mcpy.lang.lexer.token.Token
 import com.mcpy.lang.syntax.node.expression.GenericExpression
-import com.mcpy.lang.translation.Events
-import com.mcpy.lang.translation.context.*
-import com.mcpy.lang.translation.identifier.VariableIdentifier
-import org.bukkit.Bukkit
-import org.bukkit.Material
-import org.bukkit.block.Block
-import org.bukkit.entity.Entity
-import org.bukkit.entity.EntityType
-import org.bukkit.entity.Player
+import com.mcpy.lang.translation.context.Context
+
+// Note: a chain link is a part of an expression that is separated by dots
 
 abstract class ChainLink(
     val context: Context,
     val chains: List<ChainLink>,
+    val firstToken: Token,
     index: Int,
 ) {
 

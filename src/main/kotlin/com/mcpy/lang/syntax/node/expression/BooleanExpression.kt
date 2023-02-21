@@ -25,7 +25,7 @@ data class BooleanExpression(val tokens: List<Token>, override val firstToken: T
                     }
                     if (type == TokenType.IS) {
                         val first = rightSide.first()
-                        require(rightSide.countRecursive() == 1 && first is StringToken  && Type.toJava(first) != null, firstToken) {
+                        require(rightSide.countRecursive() == 1 && first is StringToken && Type.toJava(first.value) != null, firstToken) {
                             "The 'is' keyword can only be used to check if a value is of a certain type"
                         }
                     }

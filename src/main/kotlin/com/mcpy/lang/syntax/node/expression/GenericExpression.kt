@@ -11,17 +11,19 @@ import kotlin.math.floor
 
 data class GenericExpression(val tokens: List<Token>, override val firstToken: Token) : Expression(firstToken) {
 
+    constructor(tokens: List<Token>) : this(tokens, tokens.firstOrNull() ?: error("How did this happen (tokens is empty for generic expression)?"))
+
     private var expressionChain = listOf<ChainLink>()
 
     override fun translate(context: Context): String {
         expressionChain = generateExpressionChain(context)
         return expressionChain.joinToString(".") {
-            TODO("Redo this because now there are many types of chain links")
-//            if (it.parametersInJava.isEmpty()) {
-//                it.idInJava.value
-//            } else {
-//                "${it.idInJava}(${it.parametersInJava.joinToString { p -> p.translate(context) }})"
-//            }
+            it.generate()
+            if (it.parametersInJava.isEmpty()) {
+                it.idInJava.value
+            } else {
+                "${it.idInJava}(${it.parametersInJava.joinToString(", ") { p -> p.translate(context) }})"
+            }
         }
     }
 
@@ -31,23 +33,25 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
             val token = tokens[i]
             when (token.type) {
                 TokenType.PARENTHESES -> {
-                    expressionChain += ChainGroup((token as GroupToken).value, context, expressionChain, i)
+                    expressionChain += ChainGroup((token as GroupToken).value, context, expressionChain,token, i)
                     continue
                 }
                 TokenType.ID -> {
                     if (i == tokens.lastIndex) {
-                        expressionChain += ChainProperty(token as StringToken, context, expressionChain, i)
+                        expressionChain += ChainFunction(token as StringToken, null, context, expressionChain, token, i)
                         continue
                     }
                     val nextToken = tokens[i + 1]
                     when (nextToken.type) {
                         TokenType.DOT -> {
-                            expressionChain += ChainProperty(token as StringToken, context, expressionChain, i)
+                            // Property
+                            expressionChain += ChainFunction(token as StringToken, null, context, expressionChain,token, i)
                             continue
                         }
                         TokenType.PARENTHESES -> {
-                            val callArgs = (nextToken as GroupToken).value.split(TokenType.COMMA)
-                            expressionChain += ChainFunctionCall(token as StringToken, callArgs, context, expressionChain, i)
+                            // Function call
+                            val callArgs = (nextToken as GroupToken).value.split(TokenType.COMMA) { it.type }
+                            expressionChain += ChainFunction(token as StringToken, callArgs, context, expressionChain, nextToken, i)
                             continue
                         }
                         else -> {
@@ -58,6 +62,7 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
                     }
                 }
                 TokenType.STRING_LITERAL -> {
+                    // String
                     require(i == 0, token) {
                         "A string must be the first part of an expression"
                     }
@@ -65,6 +70,7 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
                     continue
                 }
                 TokenType.NUMBER_LITERAL -> {
+                    // Int, Long, Short, Double, or Float
                     require(tokens.count() == 1, token) {
                         "A number must be the only part of an expression"
                     }
@@ -75,6 +81,7 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
                     continue
                 }
                 TokenType.BOOLEAN_LITERAL -> {
+                    // Boolean
                     require(tokens.size <= 1, token) {
                         "A boolean must be the only part of an expression"
                     }
@@ -91,20 +98,20 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
                     require(tokens.size <= 1, token) {
                         "A new dictionary must be the only part of an expression"
                     }
-                    val items = (token as GroupToken).value.split(TokenType.COMMA)
-                        .map { it.split(TokenType.COLON) }
+                    val items = (token as GroupToken).value.split(TokenType.COMMA) { it.type }
+                        .map { it.split(TokenType.COLON) { tok -> tok.type } }
                         .map {
                             require(it.size == 2 && it.all(List<Token>::isNotEmpty), it.firstOrNull()?.firstOrNull() ?: token) {
                                 "All dictionary items must be in the form of 'key: value'"
                             }
                             it[0] to it[1]
                         }
-                        .associate { GenericExpression(it.first, it.first.first()) to GenericExpression(it.second, it.second.first()) }
+                        .associate { GenericExpression(it.first) to GenericExpression(it.second) }
                     val keySet = items.keys.map { it.translate(context) }.toSet()
                     require(keySet.size == items.size, token) {
                         "All dictionary keys must be unique"
                     }
-                    expressionChain += ChainDictionary(items, context, expressionChain, i)
+                    expressionChain += ChainDictionary(items, context, expressionChain, token, i)
                     continue
                 }
                 TokenType.BRACKET -> {
@@ -112,12 +119,12 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
                     require(tokens.size <= 1, token) {
                         "A new list must be the only part of an expression"
                     }
-                    val items = (token as GroupToken).value.split(TokenType.COMMA)
-                        .map { GenericExpression(it, it.firstOrNull() ?: token) }
+                    val items = (token as GroupToken).value.split(TokenType.COMMA) { it.type }
+                        .map { GenericExpression(it) }
                     items.firstOrNull { it.tokens.isEmpty() }?.let {
                         error("You can't have 2 commas with nothing between them", it.firstToken)
                     }
-                    expressionChain += ChainList(items, context, expressionChain, i)
+                    expressionChain += ChainList(items, context, expressionChain, token, i)
                     continue
                 }
                 else -> {
