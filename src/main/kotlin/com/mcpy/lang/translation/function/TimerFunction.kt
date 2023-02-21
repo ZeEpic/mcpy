@@ -6,7 +6,7 @@ import com.mcpy.lang.translation.identifier.Function
 
 class TimerFunction : Function(
     mutableListOf(),
-    Type("void"),
+    Type.VOID,
     Name("beginTimer", Name.NameType.FUNCTION),
     "double seconds, Runnable runnable",
     "Bukkit.getScheduler().runTaskTimer(this, runnable, 0, (long) (20 * seconds));"

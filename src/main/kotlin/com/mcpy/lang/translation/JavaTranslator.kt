@@ -4,20 +4,15 @@ import com.mcpy.lang.abstractions.Name
 import com.mcpy.lang.abstractions.Type
 import com.mcpy.lang.asResource
 import com.mcpy.lang.camelCase
-import com.mcpy.lang.lexer.token.NumberToken
-import com.mcpy.lang.lexer.token.StringToken
+import com.mcpy.lang.errors.require
 import com.mcpy.lang.lexer.token.TokenType
 import com.mcpy.lang.pascalCase
+import com.mcpy.lang.startsWithAny
 import com.mcpy.lang.syntax.node.SyntaxNode
-import com.mcpy.lang.syntax.node.control.ForeachSyntaxNode
-import com.mcpy.lang.syntax.node.control.IfSyntaxNode
-import com.mcpy.lang.syntax.node.control.ReturnSyntaxNode
-import com.mcpy.lang.syntax.node.control.WhileSyntaxNode
+import com.mcpy.lang.syntax.node.control.*
 import com.mcpy.lang.syntax.node.expression.ExpressionSyntaxNode
 import com.mcpy.lang.syntax.node.expression.VariableDefinitionSyntaxNode
-import com.mcpy.lang.syntax.node.global.CommandDefinitionSyntaxNode
-import com.mcpy.lang.syntax.node.global.ComplexFunctionCallSyntaxNode
-import com.mcpy.lang.syntax.node.global.FunctionDefinitionSyntaxNode
+import com.mcpy.lang.syntax.node.global.*
 import com.mcpy.lang.translation.context.*
 import com.mcpy.lang.translation.function.CustomFunction
 import com.mcpy.lang.translation.function.EventFunction
@@ -30,14 +25,38 @@ import org.eclipse.jdt.core.formatter.CodeFormatter
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 import org.eclipse.jface.text.Document
 
+// For later when coding GUI:
+/*
+        GUI creator function
+
+        String pattern = "";
+        HashMap<Character, ItemStack> legend = new HashMap<>();
+        for (int i = 0; i < pattern.length(); i++) {
+            char c = pattern.charAt(i);
+            if (c == ' ') continue;
+            if (!legend.containsKey(c)) continue;
+            inventory.setItem(i, legend.get(c));
+        }
+
+        InventoryClickEvent
+
+        String pattern = "";
+        switch (pattern.charAt(event.getSlot())) {
+            case 'put user specified char here' -> {
+                // do something
+            }
+        }
+ */
+
 class JavaTranslator : Translator {
 
     private val imports = mutableListOf<String>()
     private val events = mutableListOf<EventFunction>()
     private val methods = mutableListOf<Function>()
     private val fields = mutableListOf<String>()
-    private val onEnable = CustomFunction(mutableListOf("Override"), Type("void"), Name("onEnable", Name.NameType.FUNCTION), "", "")
-    private val traits = mutableMapOf<Name, MutableMap<Name, Type>>() // <parent_class, <trait_name, data_type>>
+    private val onEnable = CustomFunction(mutableListOf("Override"), Type.VOID, Name("onEnable", Name.NameType.FUNCTION), "", "")
+    private val traits = mutableMapOf<Name, TraitDefinitionSyntaxNode>()
+    private val guiPatterns = mutableMapOf<String, String>() // <gui_name, pattern>
 
 
     private val globalContext = GlobalContext()
@@ -48,9 +67,9 @@ class JavaTranslator : Translator {
             .forEach {
                 val id = it.identifier.value
                 val variableArgs = it.args.args.map { arg ->
-                    VariableIdentifier(Name(arg.identifier.value, Name.NameType.VARIABLE), Type(arg.type.value), "", arg.identifier.line)
+                    VariableIdentifier(Name(arg.identifier.value, Name.NameType.VARIABLE), Type(arg.type.value), "")
                 }
-                val returnType = Type.toJava(it.returnType).toType()
+                val returnType = it.returnType?.let { t -> Type.toJava(t.value)?.toType() } ?: Type.VOID
                 val func = CustomFunction(
                     mutableListOf(),
                     returnType,
@@ -66,58 +85,30 @@ class JavaTranslator : Translator {
             }
         for (node in nodes) {
             when (node) {
-                is ComplexFunctionCallSyntaxNode -> {
-                    when (ComplexFunctionCallSyntaxNode.Type.valueOf(node.functionIdentifier.value)) {
-                        ComplexFunctionCallSyntaxNode.Type.EVENT -> {
-                            val event = node.args[0].tokens
-                                .filterIsInstance<StringToken>()
-                                .joinToString("") { it.value }
-                            // TODO: event definition changed to be `event <event_name>(event.stuff) {}`
-                            if (event == "server.start") {
-                                onEnable.body += "do {" + translate(node.body, EventContext(Name("onEnable", Name.NameType.EVENT), globalContext.identifiers)) + "}\n"
-                            } else {
-                                val spigotEvent = Events.spigotEvent(Name(event, Name.NameType.EVENT))
-                                if (spigotEvent == null) {
-                                    com.mcpy.lang.errors.error("Unknown event $event", node.args[0].tokens[0])
-                                } else {
-                                    // TODO: fix event name because of new event syntax
-                                    val eventName = Name("incomplete", Name.NameType.FUNCTION)
-                                    events += EventFunction(
-                                        eventName,
-                                        Type(spigotEvent),
-                                        translate(node.body, EventContext(eventName, globalContext.identifiers))
-                                    )
-                                }
-                            }
-                        }
-                        ComplexFunctionCallSyntaxNode.Type.METADATA -> {
-                            val traitType = node.args[0].tokens[0] as StringToken
-                            val traitName = traitType.value
-                            if (traitName !in traits.mapKeys { it.key.value }) {
-                                traits[Name(traitName, Name.NameType.CLASS)] = mutableMapOf()
-                            }
-                            node.body.filterIsInstance<VariableDefinitionSyntaxNode>()
-                                .forEach {
-                                    it.initialValue.translate(globalContext)
-                                    val traitMap = traits.filterKeys { t -> t.value == traitName }.values.first()
-                                    // TODO: redo this for the new syntax
-//                                    traitMap[it.identifier.value] = it.initialValue.resultType ?: Type(String::class)
-                                }
-                        }
-                        ComplexFunctionCallSyntaxNode.Type.TIMER -> {
-                            if (!hasTimer) {
-                                hasTimer = true
-                                methods += TimerFunction()
-                            }
-                            val secondsToken = node.args[0].tokens[0]
-                            com.mcpy.lang.errors.require(secondsToken is NumberToken, secondsToken) {
-                                "Timer argument must be a number (at line ${secondsToken.line})."
-                            }
-                            onEnable.body += "beginTimer(${secondsToken.value}, () -> {\n"
-                            onEnable.body += translate(node.body, TimerContext(globalContext.identifiers))
-                            onEnable.body += "\n});\n"
-                        }
+                is EventDefinitionSyntaxNode -> {
+                    val event = Type(node.event.translate(globalContext))
+                    // TODO: This causes a problem if more than one of the same event is defined
+                    val name = Name("on" + event.type, Name.NameType.FUNCTION)
+                    events += EventFunction(
+                        name,
+                        event,
+                        translate(node.body, EventContext(event, globalContext.identifiers))
+                    )
+                }
+                is TimerDefinitionSyntaxNode -> {
+                    if (!hasTimer) {
+                        methods += TimerFunction()
+                        hasTimer = true
                     }
+                    onEnable.body += "\ngetServer().getScheduler().runTaskTimer(this, () -> {\n" +
+                            translate(node.body, TimerContext(globalContext.identifiers)) +
+                    "}, 0, ${(node.seconds * 20.0).toLong()}L);\n"
+                }
+                is GuiDefinitionSyntaxNode -> {
+
+                }
+                is TraitDefinitionSyntaxNode -> {
+                    traits[Name(node.identifier.value, Name.NameType.VARIABLE)] = node
                 }
                 is CommandDefinitionSyntaxNode -> {
                     // TODO: Implement command arguments
@@ -128,10 +119,7 @@ class JavaTranslator : Translator {
                 }
                 is FunctionDefinitionSyntaxNode -> continue
                 is VariableDefinitionSyntaxNode -> {
-                    fields += "private var ${node.identifier.value.pascalCase()} = ${
-                        node.initialValue.translate(VariableDefinitionContext(globalContext.identifiers))
-                    };"
-                    generateVariableIdentifier(node)
+                    fields += "private" + generateVariableIdentifier(node, globalContext)
                 }
                 else -> {
                     com.mcpy.lang.errors.error(
@@ -143,17 +131,24 @@ class JavaTranslator : Translator {
         }
     }
 
-    private fun generateVariableIdentifier(node: VariableDefinitionSyntaxNode) {
+    private fun generateVariableIdentifier(node: VariableDefinitionSyntaxNode, context: Context): String {
         val resultType = node.initialValue.resultType
-        com.mcpy.lang.errors.require(resultType != null, node.identifier) {
+        require(resultType != null, node.identifier) {
             "Variable must be initialized with a real value!"
         }
-        globalContext.identifiers += VariableIdentifier(
-            Name(node.identifier.value, Name.NameType.VARIABLE),
+        val name = Name(node.identifier.value, Name.NameType.VARIABLE)
+        val translate = node.initialValue.translate(VariableDefinitionContext(context.identifiers))
+        context.identifiers += VariableIdentifier(
+            name,
             resultType,
-            node.initialValue.translate(globalContext),
-            node.identifier.line
+            translate
         )
+        val type = resultType.type
+        val varType = if (context.identifiers.filterIsInstance<VariableIdentifier>().any { it.name.value == name.value }) {
+            ""
+        } else if (type == "Object" || type == "java.lang.Object") "var "
+          else "$type "
+        return "$varType${node.identifier.value.pascalCase()} = $translate;"
     }
 
     private fun translate(nodes: List<SyntaxNode>, context: Context): String {
@@ -172,10 +167,36 @@ class JavaTranslator : Translator {
                     println(node)
                 }
                 is ForeachSyntaxNode -> {
-                    val loopType = node.genericExpression.resultType ?: Type(Object::class)
-                    builder += "for ($loopType ${node.loopIdentifier.value.camelCase()} : ${node.genericExpression.translate(
-                        ForeachContext(loopType, globalContext.identifiers)
-                    )}) {\n"
+                    val loopType = node.loopIterator.resultType
+                    require(loopType?.type?.startsWithAny("HashMap", "List") == true, node.loopIterator.firstToken) {
+                        "A for each loop can only iterate over a list or dictionary"
+                    }
+                    val loopTypeValue = loopType?.type!!
+                    val loopIdentifierTypes = loopTypeValue.split("<", ">")[1].split(",")
+                    val loopIdentifiers = node.loopIdentifiers.map { it.value }.zip(loopIdentifierTypes).map { (name, type) ->
+                        VariableIdentifier(Name(name, Name.NameType.VARIABLE), Type.toJava(type)?.value?.let { Type(it) } ?: Type.VOID, "")
+                    }
+                    if (loopTypeValue.startsWith("HashMap")) {
+                        require(loopIdentifiers.size == 2, node.loopIdentifiers.lastOrNull() ?: node.firstToken) {
+                            "A for each loop over a dictionary must have two variables, one for the keys and one for the values"
+                        }
+                        val loopIterator = node.loopIterator.translate(
+                            ForeachContext(loopType,
+                                (globalContext.identifiers + loopIdentifiers ).toMutableList()
+                            )
+                        )
+                        builder += "$loopIterator.forEach((${loopIdentifiers.joinToString { it.name.value }}) -> {\n"
+                    } else {
+                        require(loopIdentifiers.size == 1, node.loopIdentifiers.lastOrNull() ?: node.firstToken) {
+                            "A for each loop over a list must have one variable for each value"
+                        }
+                        val id = loopIdentifiers.first()
+                        builder += "for (${Type.toJava(id.type.type)} ${id.name.convertedValue} : ${node.loopIterator.translate(
+                            ForeachContext(loopType,
+                                (globalContext.identifiers + id).toMutableList()
+                            )
+                        )}) {\n"
+                    }
                     builder += translate(node.body, context)
                     builder += "}\n"
                 }
@@ -185,11 +206,11 @@ class JavaTranslator : Translator {
                 is ReturnSyntaxNode -> {
                     // TODO: unfinished syntax
                 }
+                is MatchSyntaxNode -> {
+
+                }
                 is VariableDefinitionSyntaxNode -> {
-                    builder += "var ${node.identifier.value.pascalCase()} = ${
-                        node.initialValue.translate(VariableDefinitionContext(globalContext.identifiers))
-                    };\n"
-                    generateVariableIdentifier(node)
+                    builder += generateVariableIdentifier(node, context) + "\n"
                 }
             }
         }
@@ -201,18 +222,19 @@ class JavaTranslator : Translator {
         val complete = template.format(
             imports.joinToString(";\nimport "),
             pluginName,
-            fields.joinToString("\n"),
+            fields.joinToString("\n") + guiPatterns.map { (name, pattern) -> "String gui${name.pascalCase()} = \"$pattern\";" },
             onEnable.build(),
             events.joinToString("\n", transform = Function::build),
             methods.joinToString("\n", transform = Function::build)
         )
+
+        // ZeEpic note: I have no idea why this formatting thing works, or why we have to use java version 1.5 formatting
         val options = DefaultCodeFormatterConstants.getEclipseDefaultSettings()
 
-        options[JavaCore.COMPILER_COMPLIANCE] = JavaCore.VERSION_1_5
-        options[JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM] = JavaCore.VERSION_1_5
-        options[JavaCore.COMPILER_SOURCE] = JavaCore.VERSION_1_5
+        options[JavaCore.COMPILER_COMPLIANCE] = JavaCore.VERSION_1_7
+        options[JavaCore.COMPILER_CODEGEN_TARGET_PLATFORM] = JavaCore.VERSION_1_7
+        options[JavaCore.COMPILER_SOURCE] = JavaCore.VERSION_1_7
 
-        // Can use: DefaultCodeFormatterConstants.SOMETHING
         val formatter = ToolFactory.createCodeFormatter(options)
         val edits = formatter.format(CodeFormatter.K_COMPILATION_UNIT, complete, 0, complete.length, 0, "\n")
         val document = Document(complete)

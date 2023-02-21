@@ -6,6 +6,5 @@ import com.mcpy.lang.abstractions.Type
 data class VariableIdentifier(
     val name: Name,
     val type: Type,
-    val startingValue: String,
-    val line: Int
+    val startingValue: String
 ) : Identifier
