@@ -3,6 +3,7 @@ package com.mcpy.lang.lexer
 import com.mcpy.lang.compiler.CompilerPhase
 import com.mcpy.lang.errors.CodeFile
 import com.mcpy.lang.lexer.token.*
+import java.util.*
 
 class Lexer : CompilerPhase {
 
@@ -112,10 +113,10 @@ class Lexer : CompilerPhase {
             val token = code[j]
             val value = token.value
             if (value in listOf("{", "[", "(")) {
-                val end = nextToken(code, j + 1, token.type)
+                val end = code.nextToken(j + 1, token.type)
                 val group = GroupToken(
                     token.type,
-                    groupBrackets(sub(code, j + 1, end)),
+                    groupBrackets(code.subList(j + 1, end)),
                     token.line,
                     token.character,
                     token.file
@@ -140,4 +141,21 @@ class Lexer : CompilerPhase {
         }
         return false
     }
+
+    private fun List<Token>.nextToken(from: Int, type: TokenType, end: Int = this.size): Int {
+        val stack = Stack<Int>()
+        for (i in from until this.size) {
+            val t = this[i]
+            if (t.type !== type) continue
+            if (t.value == type.values[0]) { // Open
+                stack.push(i)
+            } else if (t.value == type.values[1]) { // Close
+                if (stack.isEmpty()) return i
+                stack.pop()
+            }
+            if (i >= end) break
+        }
+        return -1
+    }
+
 }

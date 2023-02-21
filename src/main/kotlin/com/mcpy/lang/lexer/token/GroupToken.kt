@@ -9,3 +9,7 @@ class GroupToken(
     character: Int,
     file: CodeFile
 ) : Token(type, line, character, file)
+
+fun getGroup(token: Token): List<Token> {
+    return (token as GroupToken).value
+}

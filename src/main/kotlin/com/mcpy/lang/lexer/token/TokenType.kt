@@ -3,7 +3,7 @@ package com.mcpy.lang.lexer.token
 enum class TokenType(vararg values: String) {
     ID, NUMBER_LITERAL, STRING_LITERAL, BOOLEAN_LITERAL("true", "false"),
     EOL("\\n"),
-    ASSIGNMENT_OPERATOR("="),
+    ASSIGNMENT_OPERATOR("=", "+=", "-=", "*=", "/=", "%="),
     BOOLEAN_OPERATOR(
         ">",
         "<",
@@ -18,7 +18,7 @@ enum class TokenType(vararg values: String) {
     PARENTHESES("(", ")"), BRACKET("[", "]"), BRACE("{", "}"),
     COMMA(","), DOT("."), COLON(":"), AT("@"),
     IF("if"), ELSE("else"), ELIF("elif"),
-    WHILE("while"), FOR("for"), MATCH("match"),
+    WHILE("while"), FOR("for"), MATCH("match"), CASE("case"), BREAK("break"), CONTINUE("continue"),
     COMMAND("cmd"), BY("by"),
     TRAIT("trait"), WHEN("when"), TIMER("timer"), GUI("gui"),
     FUNCTION("def"), RETURN("return"), PASS("pass");
