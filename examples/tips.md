@@ -2,12 +2,12 @@
 
 ## Getting Started
 - Learn python
-- If you're unsure on how to code something, assume it works the same as it does in python but replace a colon with `{ }`
+- If you're unsure on how to code something, assume it works the same as it does in python but replace a `:` with `{ }`
 - If it's something specific to Minecraft plugins, check this example folder
   - If you're still stuck, ask in the Discord
 - Unlike python, adding tab spacing is not required, but is recommended
 - The error handling is intended to be as clear and helpful as possible, so if you have any improvement requests please leave them in the Discord server
-- If you're trying to do something niche, it's probably supported. Look in the [Spigot JavaDocs](https://hub.spigotmc.org/javadocs/spigot/).
+- If you're trying to do something niche, it's probably supported. Search in the [Spigot JavaDocs](https://hub.spigotmc.org/javadocs/spigot/).
   - *Be careful! If you find a method starting with 'set', 'get', or 'is', use the rest of the method name in snake_case*
   - *Player#getDisplayName is now player.display_name*
 
@@ -20,21 +20,22 @@
 
 ## For Python Users
 - Use snake_case_for_everything, otherwise the compiler will be very angry
-  - The exception to this is enums like materials and entity types, which are all uppercase
+  - *The exception to this is enums like materials and entity types, which are all uppercase*
 - Use `@` for locations, like `@target`
-  - This is a short version of `target.location`
+  - *This is a short version of* `target.location`
 - Use `true` and `false` instead of `True` and `False`
 - Use `num` instead of `int` or `float`
 - No need for f-strings
-  - Use `"{code}"` instead of `f"{code}"`
+  - *Use `"{code}"` instead of `f"{code}"`*
 - `import` doesn't exist
+  - *You are able to reference functions and global variables defined in other files of your plugin any time*
 - Tuples don't exist
-  - Use a list instead
+  - *Use a list instead*
 - Classes are not supported
-- You are able to reference functions and global variables defined in other files of your plugin
 - Strong typing is required on functions
-  - `def function(arg: num): bool`
-  - You don't need a return type on a function if it does not return anything
+  - `def function(arg: num): bool { }`
+  - In this example num is the type of the argument, and bool is the return type
+  - You don't need a return type on a function if it doesn't return anything
   - Lists or dictionaries types are `list[num]` or `dict[str, num]`
 - Many helpful code structures follow this format:
 ```python

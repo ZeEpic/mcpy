@@ -18,6 +18,7 @@ gui test_gui(p: player) {
         "2": item(DIAMOND, "Item 2"),
         "3": item(IRON_INGOT, "Item 3")
     }
+
     # Define what happens when each item is clicked
     # Action match statement is optional
     # Must match the 'action' keyword specifically

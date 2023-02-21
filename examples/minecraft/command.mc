@@ -1,5 +1,5 @@
 # Define a command called "/tp" that can only be done by players, not console
-# Commands that can be done by console or players don't need "by player" or "by console"
+# Commands that can be done by both console and players don't need "by player" or "by console"
 # Commands never return anything, unlike some functions
 cmd tp(target: player) by player {
     sender.send("You have been teleported to {target.name}.")

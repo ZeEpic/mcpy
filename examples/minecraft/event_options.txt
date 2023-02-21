@@ -203,6 +203,8 @@ server.plugin
 server.command
 server.command
 server
+server.start
+server.stop
 server.ping
 server.load
 server.service
