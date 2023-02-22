@@ -1,0 +1,33 @@
+name: MovingBorder
+version: 1.0.0
+api-version: 1.19
+authors: [ ZeEpic ]
+main: MinecraftPython # this isn't needed
+commands:
+  worldcenter:
+    description: Tells you where the border mob is in your world.
+    permission: border.center
+    aliases: [ wc, center ]
+  spawn:
+    description: Teleports you to the world's spawn after 5 seconds.
+    permission: border.spawn
+  forcespawn:
+    description: Sends a player to spawn immediately.
+    permission: border.forcespawn
+    usage: /forcespawn <player>
+  borderhat:
+    description: Puts the border mob on your head.
+    permission: border.hat
+    aliases: [ tpborder, bordermobhat ]
+  borderfix:
+    description: Summons the border mob, and optionally changes it's entity type.
+    permission: border.create
+    aliases: [ bordermob ]
+    usage: /borderfix [entity type]
+  eject:
+    description: Eject the border-mob from the player if they used /borderhat.
+    permission: border.eject
+  freezeborder:
+    description: Freeze or unfreeze the border-mob in your world. This will prevent it from moving.
+    permission: border.freeze
+    aliases: [ freeze ]

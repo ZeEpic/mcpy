@@ -13,10 +13,20 @@
 
 ## Plugin.yml
 - The plugin.yml is a file that contains information about your plugin
-- You can find an overview of all of your options [here](https://www.spigotmc.org/wiki/plugin-yml/).
+- The required fields are `name` and `version`, such as 1.0.0
+- You can find an overview of all of your options [here](https://www.spigotmc.org/wiki/plugin-yml/)
 - Ignore the `main` field, because it's generated for you
-- If you would like to create a command, be sure to add it to the `commands` field
-- The yml file format is very simple, but any errors will cause your plugin to not work
+  - *Including it will do nothing*
+- For your plugin's commands to work, be sure to add them to the `commands` field
+- The yml file format is very simple, but any typos will cause your plugin to not work
+```yaml
+name: ExamplePlugin
+version: 1.0.0
+commands:
+  say:
+    description: Say something
+    usage: /say <message>
+```
 
 ## For Python Users
 - Use snake_case_for_everything, otherwise the compiler will be very angry

@@ -1,32 +1,30 @@
 # Define an event
-when (blocks.break) {
+when blocks.break {
     # This code is run when any block is broken by a player
-    player.send("You broke a block of type {block.type}.")
-    if block.type == GRASS_BLOCK {
+    player.send("You broke a block of type {event.block.type}.")
+    if event.block.type == GRASS_BLOCK {
         cancel() # Cancel the event, so the block is not broken
     }
 }
 
-# Define a player trait
-# This line gives all players a property called "game_level"
-# This could also be used to store amount of money, etc.
-trait game_level(level: int) by player
+trait game_level(level: num, received: time) by player  # 'player' can be replaced by lots of other types
 
-# Define a command
-cmd level(target: player, level: int = -1) {
-    aliases = ["set-level", "lvl", "setlvl"]
+# Command using traits
+cmd level(target: player, level: num) {
     if level < 0 {
-        sender.send("{target.name} is level {target.game_level}.")
+        sender.send("{target.name} has been level {target.game_level.level} since {target.game_level.received}.")
         return
     }
-    sender.send("{target.name} is now level {level}.")
     target.game_level = level
+    sender.send("{target.name} is now level {level}.")
+    target.game_level.received = now()
 }
 
+
 cmd gui() by player {
-    # Open the gui defined above
     sender.open_gui(test_gui(sender))
 }
+
 
 # Define a gui
 # One could pass parameters through here that should show up on the gui, like player or location
@@ -39,6 +37,7 @@ gui test_gui(p: player) {
         "# 1 2 3 #",
         "#########"
     ]
+
     # Define what each item is
     # items can have only a material, or can include a name and lore
     legend = {
@@ -47,6 +46,7 @@ gui test_gui(p: player) {
         "2": item(DIAMOND, "Item 2"),
         "3": item(IRON_INGOT, "Item 3")
     }
+
     # Define what happens when each item is clicked
     match action {
         case "1" {

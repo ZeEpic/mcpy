@@ -1,0 +1,5 @@
+overworld_name: world
+nether_name: world_nether
+world_border_size:
+  overworld: 100
+  nether: 100
