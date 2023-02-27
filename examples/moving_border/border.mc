@@ -1,14 +1,14 @@
 trait border(is_controlling: bool) by entity
 
 border_mobs = {
-    world(Config.overworld_name): {
+    world(CONFIG.overworld_name): {
         "name": "&3World &bBorder",
-        "color": ChatColor.AQUA,
+        "color": AQUA,
         "mob": None
     },
-    world(Config.nether_name): {
+    world(CONFIG.nether_name): {
         "name": "&4World &cBorder",
-        "color": ChatColor.RED,
+        "color": RED,
         "mob": None
     }
 }
@@ -30,7 +30,7 @@ timer move_border(1) {
 }
 
 timer respawn_border(30 * 60) {
-    world = world(CONFIG.overworld_name)
+    world = World(CONFIG.overworld_name)
     border_mobs[world]["mob"] = create_border_mob(world)
     broadcast("\n&aThe world border was been respawned in the overworld.\n")
 }

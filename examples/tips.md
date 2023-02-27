@@ -29,12 +29,9 @@ commands:
 ```
 
 ## For Python Users
-- Use snake_case_for_everything, otherwise the compiler will be very angry
-  - *The exception to this is enums like materials and entity types, which are all uppercase*
-- Use `@` for locations, like `@target`
-  - *This is a short version of* `target.location`
 - Use `true` and `false` instead of `True` and `False`
 - Use `num` instead of `int` or `float`
+- Use `@` for locations, like `@target`
 - No need for f-strings
   - *Use `"{code}"` instead of `f"{code}"`*
 - `import` doesn't exist
@@ -47,15 +44,3 @@ commands:
   - In this example num is the type of the argument, and bool is the return type
   - You don't need a return type on a function if it doesn't return anything
   - Lists or dictionaries types are `list[num]` or `dict[str, num]`
-- Many helpful code structures follow this format:
-```python
-structure name(arguments) by someone {
-    # code
-}
-```
-Such as:
-```python
-cmd say(message: str) by player {
-    broadcast("&7&o{sender.name} says &f{message}")
-}
-```
