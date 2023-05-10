@@ -2,16 +2,18 @@
 - All of these types can be created using a function with their respective name, like world("world name")
 - Some of these can be referenced with an uppercase version, specifically the ones from Bukkit, like World and Player
 - Every other type not on this list follows the PascalCase rules, like LivingEntity for example
+```md
 str              A string like `"Hello World"`
-num              Any integer or decimal like `25` or `10.2`
+num                Any integer or decimal like `25` or `10.2`
 bool             A boolean value like `true` or `false`
 location         A position in a Minecraft world like `world@(0, 64, 0)` or `location(world, 0, 64, 0)`
-vector           A position without a world like `vector(0, 64, 0)` or `location.to_vector()`
+vec              A position without a world like `vector(0, 64, 0)` or `location.to_vector()`
 block            A Minecraft block like `location.block` (not to be confused with material)
 item             A Minecraft item like `item(STONE, 32)`
 material         A Minecraft material like `STONE` or `block.type`
 color            A chat color like RED or `color("#FFFFFF")`
 entity           Any Minecraft entity
+entitytype       A type of entity like `ZOMBIE`
 player           Any player currently on the server, like `player("ZeEpic")`
 world            A Minecraft world such as `world("world name")`
 time             Represents a time or length of time like `now()` or `time(1000)` meaning 1 second
@@ -22,7 +24,13 @@ attribute        An entity's attribute like `player.get_attribute(GENERIC_MAX_HE
 biome            A biome like `FOREST`
 enchantment      An enchantment like `SHARPNESS`
 potion           A potion including an effect type, duration, and amplifier
-
+file             A file on the server like a folder or a text file, like `file("plugins/MyPlugin/config.yml")`
+function         A reference to a function that can be called like `function("my_function")`
+sound            A sound like `ENTITY_PLAYER_LEVELUP`
+particle         A particle effect like `VILLAGER_HAPPY`
+event            The name of an event like players.join
+permission       A permission like `myplugin.command`
+```
 
 
 ## Special Priority Enums

@@ -27,6 +27,18 @@ fun <E, T> List<E>.split(separator: T, keepSplitValue: Boolean = false, splitBy:
     return result
 }
 
+fun <E> List<List<E>>.join(separator: (E) -> E): List<E> {
+    val result = mutableListOf<E>()
+    for (i in this.indices) {
+        val list = this[i]
+        result.addAll(list)
+        if (list.isNotEmpty() && i != this.lastIndex) {
+            result += separator(list.last())
+        }
+    }
+    return result
+}
+
 fun List<Token>.countRecursive(type: TokenType? = null): Int {
     var count = 0
     for (i in this.indices) {

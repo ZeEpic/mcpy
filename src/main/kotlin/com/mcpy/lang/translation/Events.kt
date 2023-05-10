@@ -6,7 +6,7 @@ import com.mcpy.lang.asResource
 
 object Events {
 
-    private val eventMap = HashMap<Name, Type>()
+    private val eventMap = HashMap<String, Type>()
 
     init {
         val eventMapString = "event_map.txt".asResource()
@@ -16,15 +16,15 @@ object Events {
             .map { it.split(": ") }
             .filter { it.size == 2 }
             .forEach { (clazz, dotEvent) ->
-                eventMap[Name(dotEvent.trim(), Name.NameType.EVENT)] = Name(clazz, Name.NameType.CLASS).toType()
+                eventMap[dotEvent.trim()] = Name(clazz, Name.NameType.CLASS).toType()
             }
     }
 
-    fun spigotEvent(event: Name): String? {
-        if (event.value == "server.start") {
+    fun spigotEvent(event: String): String? {
+        if (event == "server.start") {
             return "onEnable"
         }
-        if (event.value == "server.stop") {
+        if (event == "server.stop") {
             return "onDisable"
         }
         val spigotEvent = eventMap[event] ?: return null

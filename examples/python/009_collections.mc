@@ -10,17 +10,20 @@ def collections() {
     if 23 in my_list {
         print("23 is in the list")
     } elif 24 not in my_list {
-        print("24 is not in the list")
+        print("23 and 24 are not in the list")
     }
 
-    my_dictionary = {} # this is like a list, but with keys and values pairs
-    my_dictionary["key"] = "value" # add to or change the dictionary like this
-    # They operate the same way as lists do, but you can't have more than one of the same key.
-    # You can have as many duplicate values as you want.
-    # These work essentially the same as HashMaps in Java.
+    my_dictionary = {} # this is like a list, but with key and value pairs
+    my_dictionary["key"] = "value" # add to or change values in a dictionary like this
+    # They operate the same way as lists do, but you can't have more than one of the same key in a dictionary
+    # You can have as many duplicate values as you want
+    # These work essentially the same as HashMaps in Java
 
     # A very useful element of concise code is called list comprehension.
     # It's a way to create a list in one line of code.
     list_comp = [x for x in range(10)] # this creates a list of numbers from 0 to 9
     list_comp2 = [x for x in range(10) if x % 2 == 0] # this creates a list of even numbers from 0 to 9
+
+    # Add all items in my_list to list_comp list
+    list_comp.extend(my_list)
 }

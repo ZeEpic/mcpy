@@ -2,6 +2,7 @@ package com.mcpy.lang.lexer
 
 import com.mcpy.lang.compiler.CompilerPhase
 import com.mcpy.lang.errors.CodeFile
+import com.mcpy.lang.errors.require
 import com.mcpy.lang.lexer.token.*
 import java.util.*
 
@@ -45,6 +46,8 @@ class Lexer : CompilerPhase {
                     )
                 }
                 token = ""
+                if (nextCharacter(charArray)) break
+                continue
             }
 
             // New line
@@ -72,11 +75,15 @@ class Lexer : CompilerPhase {
                 string = charArray[i].toString()
                 while (string != stringType) {
                     token += string
+                    require(string != "\n", lineCharacter, line, code) {
+                        "Missing closing quote"
+                    }
                     if (nextCharacter(charArray)) break
                     string = charArray[i].toString()
                 }
                 tokens.add(StringToken(TokenType.STRING_LITERAL, token, line, lineCharacter, code))
                 token = ""
+                continue
             }
 
             // Check for last character
@@ -93,9 +100,10 @@ class Lexer : CompilerPhase {
             val doubleToken = string + charArray[i + 1]
             val doubleTokenType = findTokenType(doubleToken)
             if (doubleTokenType == null) {
-                if (type != null) {
-                    tokens.add(StringToken(type, string, line, lineCharacter, code))
+                require(type != null, lineCharacter, line, code) {
+                    "Unknown token \"$doubleToken\""
                 }
+                tokens.add(StringToken(type, string, line, lineCharacter, code))
                 if (nextCharacter(charArray)) break
                 continue
             }

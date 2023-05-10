@@ -14,7 +14,7 @@ def find_open_nether_space(loc: location): location {
 def create_border_mob(world: world) {
     center = world.world_border.center
     if not center.is_chunk_loaded { return }
-    if border_mobs[world]["mob"] is not None and not border_mobs[world]["mob"].is_valid {
+    if border_mobs[world]["mob"] is not None and border_mobs[world]["mob"].is_valid {
         return
     }
     find_matching_entity(world).remove()

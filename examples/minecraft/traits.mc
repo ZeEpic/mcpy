@@ -5,7 +5,7 @@
 # This is kind of like a database so it's automatically saved when the server restarts
 # There are plans to add other kinds of permanent storage in the future
 
-trait game_level(level: num, received: time) by player  # 'player' can be replaced by lots of other types
+trait game_level(level: num, received: time) by player  # "player" can be replaced by lots of other types
 
 # Command using traits
 cmd level(target: player, level: num) {

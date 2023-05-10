@@ -89,10 +89,6 @@ data class BooleanExpression(val tokens: List<Token>, override val firstToken: T
         }
     }
 
-    init {
-        println(this)
-    }
-
     override fun translate(context: Context): String {
         // example: a and b and c    ->    a and (b and c)
         require(tokens.isNotEmpty(), firstToken) {

@@ -15,6 +15,6 @@ class Name(val value: String, val type: NameType) {
         CLASS_NAME,
         ENUM_VALUE
     }
-    val convertedValue: Name
+    val converted: Name
         get() = Name(type.converter(value), type)
 }

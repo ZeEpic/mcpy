@@ -21,7 +21,7 @@ enum class TokenType(vararg values: String) {
     WHILE("while"), FOR("for"), MATCH("match"), CASE("case"), BREAK("break"), CONTINUE("continue"),
     COMMAND("cmd"), BY("by"),
     TRAIT("trait"), WHEN("when"), TIMER("timer"), GUI("gui"),
-    FUNCTION("def"), RETURN("return"), PASS("pass");
+    FUNCTION("def"), RETURN("return");
     val values = values.toList()
 }
 

@@ -40,7 +40,7 @@ class SyntaxAnalyzer : CompilerPhase {
     ): SyntaxNode {
         when (val first = codeLine[0].type) {
             TokenType.FUNCTION, TokenType.COMMAND, TokenType.GUI, TokenType.TIMER, TokenType.TRAIT -> {
-                val lineType = first.name.title()
+                val lineType = first.name.lowercase().title()
                 require(codeLine.size >= 4, codeLine[0]) {
                     "$lineType definition must have at least a name, parentheses, and a code body"
                 }
@@ -58,7 +58,6 @@ class SyntaxAnalyzer : CompilerPhase {
                     }
                     analyze(getGroup(body), file)
                 } else null
-
                 require(codeLine[2] is GroupToken && codeLine[2].type == TokenType.PARENTHESES, codeLine[2]) {
                     "$lineType definition must have parentheses${if (first != TokenType.TIMER) ", even if there are zero arguments" else ""}"
                 }
@@ -74,8 +73,8 @@ class SyntaxAnalyzer : CompilerPhase {
                 if (first == TokenType.GUI) { // Gui doesn't have a return type
                     return handleGuiDefinitionSyntaxNode(syntaxNodes!!, codeLine, name, args)
                 }
-                if (first == TokenType.COMMAND || first == TokenType.TRAIT) { // Command doesn't have a return type either
-                    val senderType = if (codeLine.size > 3) {
+                if (first == TokenType.COMMAND) { // Command doesn't have a return type either
+                    val senderType = if (codeLine.size > 4) {
                         // They must want to use 'by type' syntax
                         // cmd foo() by player { }
                         // ^   ^  ^  ^  ^      ^
@@ -88,25 +87,31 @@ class SyntaxAnalyzer : CompilerPhase {
                         }
                         codeLine[4] as StringToken
                     } else null
-                    if (first == TokenType.COMMAND) {
-                        require(
-                            senderType == null || senderType.value == "player" || senderType.value == "console",
-                            senderType ?: codeLine[0]
-                        ) {
-                            "Sender type must be either player or console"
-                        }
-                        return CommandDefinitionSyntaxNode(name, args, senderType, syntaxNodes!!, codeLine[0])
+                    require(
+                        senderType == null || senderType.value == "player" || senderType.value == "console",
+                        senderType ?: codeLine[0]
+                    ) {
+                        "Sender type must be either player or console"
                     }
-                    // trait foo() by player
-                    require(senderType != null, codeLine[0]) {
-                        "Trait definition must have a targeted type"
+                    return CommandDefinitionSyntaxNode(name, args, senderType, syntaxNodes!!, codeLine[0])
+                }
+                if (first == TokenType.TRAIT) {
+                    // trait game_level() by player
+                    // ^     ^         ^  ^  ^
+                    // 0     1         2  3  4
+                    require(codeLine[3].type == TokenType.BY, codeLine[3]) {
+                        "You're missing 'by' to specify the trait type. This could be an item, entity, block, player, etc."
+                    }
+                    val senderType = codeLine[4]
+                    require(codeLine.size == 5 && senderType.type == TokenType.ID && senderType is StringToken, senderType) {
+                        "You're missing a trait type after 'by'. This could be an item, entity, block, player, etc."
                     }
                     return TraitDefinitionSyntaxNode(name, args, senderType, codeLine[0])
                 }
-                val returnType = if (codeLine.size > 3 ) {
-                    // def foo(): bar
-                    // ^   ^  ^ ^ ^
-                    // 0   1  2 3 4
+                val returnType = if (codeLine.size > 4) {
+                    // def foo(): bar { }
+                    // ^   ^  ^ ^ ^   ^
+                    // 0   1  2 3 4   5
                     require(codeLine[3].type == TokenType.COLON, codeLine[3]) {
                         "$lineType has a return type, but no colon"
                     }
@@ -127,6 +132,20 @@ class SyntaxAnalyzer : CompilerPhase {
                         )
                     }
                     TokenType.DOT, TokenType.PARENTHESES -> { // Accessing a property or calling a function
+                        val assignmentOperators = codeLine.count { it.type == TokenType.ASSIGNMENT_OPERATOR }
+                        require(assignmentOperators <= 1, codeLine[0]) {
+                            "You can't have more than one assignment operator in a single line"
+                        }
+                        if (assignmentOperators == 1) {
+                            val assignmentIndex = codeLine.indexOfFirst { it.type == TokenType.ASSIGNMENT_OPERATOR }
+                            require(assignmentIndex != codeLine.size - 1, codeLine[assignmentIndex]) {
+                                "You can't have an assignment operator at the end of a line"
+                            }
+                            return PropertyAssignmentSyntaxNode(
+                                codeLine.subList(assignmentIndex + 1, codeLine.size),
+                                codeLine.subList(0, assignmentIndex),
+                            )
+                        }
                         return ExpressionSyntaxNode(codeLine, codeLine[0])
                     }
                     else -> {
@@ -158,7 +177,7 @@ class SyntaxAnalyzer : CompilerPhase {
                         analyze(getGroup(branch.last()), file)
                     )
                 }
-                require(branches.isNotEmpty(), codeLine[0]) {
+                require(branches.isEmpty(), codeLine[0]) {
                     "If statement must have a code body"
                 }
                 return IfSyntaxNode(branches, codeLine[0])

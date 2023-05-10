@@ -18,12 +18,7 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
     override fun translate(context: Context): String {
         expressionChain = generateExpressionChain(context)
         return expressionChain.joinToString(".") {
-            it.generate()
-            if (it.parametersInJava.isEmpty()) {
-                it.idInJava.value
-            } else {
-                "${it.idInJava}(${it.parametersInJava.joinToString(", ") { p -> p.translate(context) }})"
-            }
+            it.generate().first.translate(context)
         }
     }
 
@@ -136,6 +131,6 @@ data class GenericExpression(val tokens: List<Token>, override val firstToken: T
     }
 
     val resultType: Type?
-        get() = expressionChain.lastOrNull()?.returnType
+        get() = expressionChain.lastOrNull()?.generate()?.second
 
 }

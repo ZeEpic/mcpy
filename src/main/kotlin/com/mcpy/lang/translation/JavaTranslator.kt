@@ -3,14 +3,19 @@ package com.mcpy.lang.translation
 import com.mcpy.lang.abstractions.Name
 import com.mcpy.lang.abstractions.Type
 import com.mcpy.lang.asResource
-import com.mcpy.lang.camelCase
 import com.mcpy.lang.errors.require
+import com.mcpy.lang.lexer.token.StringToken
 import com.mcpy.lang.lexer.token.TokenType
+import com.mcpy.lang.lexer.token.join
+import com.mcpy.lang.lexer.token.split
 import com.mcpy.lang.pascalCase
 import com.mcpy.lang.startsWithAny
+import com.mcpy.lang.syntax.chain.validateSetter
 import com.mcpy.lang.syntax.node.SyntaxNode
 import com.mcpy.lang.syntax.node.control.*
 import com.mcpy.lang.syntax.node.expression.ExpressionSyntaxNode
+import com.mcpy.lang.syntax.node.expression.GenericExpression
+import com.mcpy.lang.syntax.node.expression.PropertyAssignmentSyntaxNode
 import com.mcpy.lang.syntax.node.expression.VariableDefinitionSyntaxNode
 import com.mcpy.lang.syntax.node.global.*
 import com.mcpy.lang.translation.context.*
@@ -25,17 +30,19 @@ import org.eclipse.jdt.core.formatter.CodeFormatter
 import org.eclipse.jdt.core.formatter.DefaultCodeFormatterConstants
 import org.eclipse.jface.text.Document
 
-// For later when coding GUI:
+// TODO For later when coding GUI:
 /*
         GUI creator function
 
-        String pattern = "";
-        HashMap<Character, ItemStack> legend = new HashMap<>();
-        for (int i = 0; i < pattern.length(); i++) {
-            char c = pattern.charAt(i);
-            if (c == ' ') continue;
-            if (!legend.containsKey(c)) continue;
-            inventory.setItem(i, legend.get(c));
+        public Inventory createGui(List<String> patternList, String title, Map<Character, ItemStack> legend) {
+            Inventory inventory = Bukkit.createInventory(null, pattern.length() / 9, title);
+            for (int i = 0; i < pattern.length(); i++) {
+                char c = pattern.charAt(i);
+                if (c == ' ') continue;
+                if (!legend.containsKey(c)) continue;
+                inventory.setItem(i, legend.get(c));
+            }
+            return inventory;
         }
 
         InventoryClickEvent
@@ -62,7 +69,7 @@ class JavaTranslator : Translator {
     private val globalContext = GlobalContext()
 
     fun translateGlobalScope(nodes: List<SyntaxNode>) {
-        var hasTimer = false
+        println("nodes1: $nodes")
         nodes.filterIsInstance<FunctionDefinitionSyntaxNode>()
             .forEach {
                 val id = it.identifier.value
@@ -83,7 +90,9 @@ class JavaTranslator : Translator {
                 methods += func
                 globalContext.identifiers += func
             }
+        println("nodes2: $nodes")
         for (node in nodes) {
+            println("node: $node")
             when (node) {
                 is EventDefinitionSyntaxNode -> {
                     val event = Type(node.event.translate(globalContext))
@@ -96,9 +105,8 @@ class JavaTranslator : Translator {
                     )
                 }
                 is TimerDefinitionSyntaxNode -> {
-                    if (!hasTimer) {
+                    if (methods.none { it is TimerFunction }) {
                         methods += TimerFunction()
-                        hasTimer = true
                     }
                     onEnable.body += "\ngetServer().getScheduler().runTaskTimer(this, () -> {\n" +
                             translate(node.body, TimerContext(globalContext.identifiers)) +
@@ -112,8 +120,9 @@ class JavaTranslator : Translator {
                 }
                 is CommandDefinitionSyntaxNode -> {
                     // TODO: Implement command arguments
-                    onEnable.body += "getCommand(\"${node.identifier.value.camelCase()}\""
+                    onEnable.body += "getCommand(\"${node.identifier.value}\""
                     onEnable.body += ").setExecutor((sender, command, label, args) -> {\n"
+                    println("hi" + node.body)
                     onEnable.body += translate(node.body, CommandContext(globalContext.identifiers))
                     onEnable.body += "});\n"
                 }
@@ -191,7 +200,7 @@ class JavaTranslator : Translator {
                             "A for each loop over a list must have one variable for each value"
                         }
                         val id = loopIdentifiers.first()
-                        builder += "for (${Type.toJava(id.type.type)} ${id.name.convertedValue} : ${node.loopIterator.translate(
+                        builder += "for (${Type.toJava(id.type.type)} ${id.name.converted} : ${node.loopIterator.translate(
                             ForeachContext(loopType,
                                 (globalContext.identifiers + id).toMutableList()
                             )
@@ -211,6 +220,23 @@ class JavaTranslator : Translator {
                 }
                 is VariableDefinitionSyntaxNode -> {
                     builder += generateVariableIdentifier(node, context) + "\n"
+                }
+                is PropertyAssignmentSyntaxNode -> {
+                    println(nodes)
+                    println(node)
+                    println(node.left)
+                    println(node.left.toMutableList())
+                    val left = node.left.split(TokenType.DOT) { it.type }
+                    val setter = left.last()
+                    require(setter.size == 1 && setter.firstOrNull()?.type == TokenType.ID, node.left.lastOrNull() ?: left.first().first()) {
+                        "You can't set a property like that. Follow this format instead: object.property = value"
+                    }
+                    val obj = left.dropLast(1).join { StringToken(TokenType.DOT, ".", it.line, it.character, it.file) }
+                    val leftType = GenericExpression(obj).resultType
+                    require(leftType != null, node.left.first()) {
+                        "You can't set a property on a null value"
+                    }
+                    validateSetter(leftType, Name((obj.first() as StringToken).value, Name.NameType.FUNCTION), node.right, node.right.first())
                 }
             }
         }

@@ -16,8 +16,9 @@ val mcVersion = "1.19.3"
 
 repositories {
     mavenCentral()
-    maven(url="https://papermc.io/repo/repository/maven-public/")
-    maven(url="https://oss.sonatype.org/content/groups/public/")
+    maven("https://hub.spigotmc.org/nexus/content/repositories/snapshots/")
+    maven("https://oss.sonatype.org/content/repositories/snapshots")
+    maven("https://oss.sonatype.org/content/repositories/central")
 }
 
 dependencies {
@@ -28,7 +29,7 @@ dependencies {
     implementation("com.google.googlejavaformat:google-java-format:1.15.0")
 
     // Dependencies for the plugin
-    compileOnly("io.papermc.paper:paper-api:$mcVersion-R0.1-SNAPSHOT")
+    compileOnly("org.spigotmc:spigot-api:$mcVersion-R0.1-SNAPSHOT")
 
     // Tests
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.0")
@@ -37,7 +38,7 @@ dependencies {
 
 // For convenience
 println(project.gradle.gradleUserHomeDir)
-val folder = file(project.gradle.gradleUserHomeDir.path.dropLast(7) +  "\\Desktop\\Minecraft\\Paper 1.19 Server\\plugins")
+val folder = file(projectDir.path + "//plugins") // file(project.gradle.gradleUserHomeDir.path.dropLast(7) +  "\\Desktop\\Minecraft\\Paper 1.19.4 Server\\plugins")
 
 tasks {
 //    test {
@@ -50,13 +51,23 @@ tasks {
 }
 
 tasks.withType<ShadowJar> {
-    archiveFileName.set("MinecraftPython.jar")
+    archiveFileName.set("$projectName.jar")
     destinationDirectory.set(folder)
 }
 
 tasks.withType<KotlinCompile> {
     kotlinOptions.jvmTarget = "1.8"
 }
+
+//task("launchServer", Exec::class) {
+//    println("hi")
+//    workingDir = folder.parentFile
+//    executable = "java"
+//    args("-jar", "paper-1.19.4-471.jar", "--nogui")
+//}
+//
+//tasks.withType<Exec> {
+//}
 
 val compileTestKotlin: KotlinCompile by tasks
 compileTestKotlin.kotlinOptions {

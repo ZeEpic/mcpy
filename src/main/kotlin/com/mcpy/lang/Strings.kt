@@ -29,3 +29,5 @@ val String.clazz: Class<*>
 fun String.asResource() = object {}.javaClass.getResource("/$this")!!.readText()
 
 fun String.startsWithAny(vararg prefixes: String) = prefixes.any { this.startsWith(it) }
+
+fun String.log() = println(this)

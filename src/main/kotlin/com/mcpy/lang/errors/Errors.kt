@@ -1,7 +1,8 @@
 package com.mcpy.lang.errors
 
+import com.mcpy.lang.bukkitMode
 import com.mcpy.lang.lexer.token.Token
-import org.bukkit.Bukkit
+import com.mcpy.lang.log
 import kotlin.contracts.ExperimentalContracts
 import kotlin.contracts.contract
 import kotlin.math.max
@@ -27,16 +28,17 @@ data class McPyError(
         val blue = if (useBukkitColors) "&b" else "\u001b[34m"
         val reset = if (useBukkitColors) "&r" else "\u001b[0m"
 
-        for (i in before..line) {
-            val numberLength = (i+1).toString().length
+        for (i in before..(line + 1)) {
+            val numberLength = i.toString().length
             val prefix = if (numberLength < length) " ".repeat(length - numberLength) else ""
-            lines.add("$blue${i+1}$prefix$white │ $reset${file.readLine(i)}")
+            if (i < 1) continue
+            lines.add("$blue${i+1}$prefix$white | $reset${file.readLine(i)}")
         }
 
         return lines
     }
 
-    fun consolePrint(useBukkitColors: Boolean) {
+    fun message(useBukkitColors: Boolean): String {
         val lines = getLines(3, useBukkitColors)
         val spaces = getSpacing()
 
@@ -50,18 +52,20 @@ data class McPyError(
             lines.joinToString("\n"),
             "${" ".repeat(spaces + 2 + column)}$red ^ $message"
         ).joinToString("\n")
-        if (useBukkitColors) {
-            Bukkit.getLogger().info(message)
-            return
-        }
-        println(message)
+        return message
     }
 
 }
 
 fun error(message: String, token: Token): Nothing {
     val error = McPyError(message, token.line, token.character, token.file)
-    error.consolePrint(true)
+    log(error.message(bukkitMode))
+    throw Exception()
+}
+
+fun error(message: String, character: Int, line: Int, file: CodeFile): Nothing {
+    val error = McPyError(message, line, character, file)
+    log(error.message(bukkitMode))
     throw Exception()
 }
 
@@ -72,5 +76,15 @@ fun require(condition: Boolean, token: Token, message: () -> String) {
     }
     if (!condition) {
         error(message(), token)
+    }
+}
+
+@OptIn(ExperimentalContracts::class)
+fun require(condition: Boolean, character: Int, line: Int, file: CodeFile, message: () -> String) {
+    contract {
+        returns() implies condition // only continues the code if the condition is true and the requirement is met
+    }
+    if (!condition) {
+        error(message(), character, line, file)
     }
 }

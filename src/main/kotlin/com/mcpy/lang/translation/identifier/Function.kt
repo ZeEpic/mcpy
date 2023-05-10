@@ -11,6 +11,6 @@ abstract class Function(
     open var body: String
 ) : Identifier {
     fun build()
-        = "${annotations.joinToString { "@$it\n" }}private ${returnType.type} ${name.value}($parameters) " +
+        = "${annotations.joinToString { "@$it\n" }}private ${returnType.type} ${name.converted.value}($parameters) " +
             "{\n$body\n}"
 }
